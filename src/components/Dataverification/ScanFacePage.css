@@ -1,0 +1,27 @@
+.container {
+  max-width: 900px;
+}
+
+ul.list-unstyled {
+  padding-left: 0;
+}
+
+ul.list-unstyled li {
+  margin-bottom: 10px;
+}
+
+.face-scanning {
+  position: relative;
+  display: inline-block;
+}
+
+.face-image {
+  width: 100%;
+  max-width: 300px;
+}
+
+
+
+.form-container {
+  margin-top: 20px;
+}

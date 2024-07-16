@@ -1,0 +1,65 @@
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-left, .login-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .login-left {
+    background-color: #1C3B75;
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .login-right {
+    background-color: #f0f0f0; /* Gray background color */
+    padding: 20px;
+  }
+  
+  .login-welcome {
+    max-width: 400px;
+  }
+  
+  .login-form {
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .google-btn {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .divider {
+    margin: 20px 0;
+  }
+  
+  .text-right {
+    text-align: right;
+  }
+  
+  .forgot-password {
+    color: #007bff;
+  }
+  
+  .login-btn {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .signup-link {
+    margin-top: 20px;
+    text-align: center;
+  }
+  

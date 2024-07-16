@@ -1,0 +1,89 @@
+.custom-background {
+    background-color: #1C3B75;
+    width:100% !important;
+    color: #fff;
+    padding: 20px; /* Optional: Add some padding for better spacing */
+  }
+  
+  .custom-background h1 {
+    color: #fff; /* Keep the specific color for the h1 element */
+  }
+  
+  .custom-background .text-secondary {
+    color: #fff !important; /* Override the text-secondary class to be white */
+  }
+  
+  .custom-button {
+    border: 2px solid #659CFB;
+    color:  #fff;
+    padding: 10px 20px;
+    border-radius: 50px; /* Makes the button rounded */
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-button:hover {
+    background: #659CFB;
+    color: #fff;
+  }
+  
+  .custom-button span {
+    margin-left: 10px;
+  }
+  
+  .custom-button i {
+    font-size: 1.2em;
+    color: #659CFB;
+  }
+  
+  .custom-button:hover i {
+    color: #fff;
+  }
+  
+
+
+
+
+/*   
+.head_left .h_subTitle{
+    background: #1C3B75;
+    color: #FB9431;
+    font-weight: bold;
+    padding: 7px 20px;
+    border-radius: 20px;
+}
+.header{
+    background: #1C3B75;
+}
+.h_title h1{
+    font-size: 50px;
+}
+.contact_btn{
+    border:1px solid #fb1c15 !important;
+    background-color: transparent !important;
+    color: #fb1c15 !important; 
+    font-weight: bold !important;
+    text-transform: capitalize;
+} */
+.head_right .imageContainer{
+    width: 100%;
+    height: 100%;
+}
+.imageContainer .head_rightImg{
+    width: 90%;
+    height: 90%;
+    object-fit: cover;
+}
+.curve{
+    width: 8rem;
+    height: 100%;
+    object-fit: cover;
+}
+.starr{
+    color: #FB9431;
+}

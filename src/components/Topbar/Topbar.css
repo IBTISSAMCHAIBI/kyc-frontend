@@ -1,0 +1,17 @@
+.bg_color{
+    background: #1C3B75;
+}
+
+.bg_login {
+    background: #659CFB;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 6px 20px;
+    text-transform: capitalize;
+}
+
+.links{
+    text-decoration: none;
+    color: #fff !important;
+}
