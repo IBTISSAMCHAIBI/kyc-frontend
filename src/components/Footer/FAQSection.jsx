@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 function FlushExample() {
   return (
-    <Container className="mt-4">
+    <Container fluid className="mt-4">
       <div className="w-75 mt-2 h_title">
         <h1>Frequently Asked Questions</h1>
       </div>
