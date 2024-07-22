@@ -13,7 +13,7 @@ const Footer = () => {
 
     return (
         <div>
-       <Container fluid className="appointment-section text-center py-5 d-flex justify-content-center align-items-center">
+       <Container className="appointment-section text-center py-2 d-flex justify-content-center align-items-center">
       <div className="box">
         <h2>Want to make an appointment easily?</h2>
         <Button variant="light" className="mt-3 contact-button">Contact here</Button>
@@ -24,7 +24,6 @@ const Footer = () => {
                     <Col md={6}>
                         <div className="footer-logo">
                             <img src={logo}alt="DEVOSPACE Logo" />
-                            <p>© 2024 DEVOSPACE</p>
                         </div>
                     </Col>
                     {/* <Col md={6} className="text-md-right">

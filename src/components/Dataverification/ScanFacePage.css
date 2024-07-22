@@ -1,27 +1,32 @@
-.container {
-  max-width: 900px;
+.verification-container {
+  padding: 20px;
+  text-align: center;
+}
+.capture-container {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center the content horizontally */
+  gap: 10px; /* Adjust the spacing between items */
 }
 
-ul.list-unstyled {
-  padding-left: 0;
+.capture-image {
+  width: 80px; /* Adjust width as needed */
+  height: auto;
+  border-radius: 5px; /* Optional: Rounded corners for the image */
+  margin-right: 10px; /* Space between image and button */
 }
 
-ul.list-unstyled li {
+.capture-button {
+  padding: 10px 20px;
+  background-color: #1C3B75; /* Updated button color */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   margin-bottom: 10px;
 }
 
-.face-scanning {
-  position: relative;
-  display: inline-block;
-}
-
-.face-image {
-  width: 100%;
-  max-width: 300px;
-}
-
-
-
-.form-container {
-  margin-top: 20px;
+.capture-button:hover {
+  background: #659CFB;
+  color: #fff;
 }

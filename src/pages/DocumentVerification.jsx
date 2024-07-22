@@ -10,24 +10,22 @@ import head_rightImg from '../assets/headerRght.png';
 const iconStyle = { color: 'blue' };
 
 const DataVerification = () => {
-  return (<div className="container">
-<Container className="my-5">
-<Row className="custom-background">
-      <Col md={6}>
-        <div className="head_left">
-          <div className="w-75 mt-2 h_title">
-            <h1>Seamless Real-time Identity Verification</h1>
+  return (
+
+<Container fluid >
+<div className="header">
+        <div className="header-content">
+          {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
+          <div className="text-content">
+            <h1>DEVOSPACE</h1>
+            {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
+            <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
           </div>
         </div>
-      </Col>
-      <Col md={6}>
-        <div className="head_right">
-          <div className="imageContainer d-flex justify-content-end align-items-center shadow-sm rounded">
-            <img src={head_rightImg} alt="header-image" className="head_rightImg" />
-          </div>
+        <div className="image-container">
+          <img src={head_rightImg} alt="Verification Process" className="verification-image" />
         </div>
-      </Col>
-    </Row>
+      </div>
 <h2 className="mb-4">Data Verification</h2>
 <p>Choose one of these document types.</p>
       <Row className="justify-content-center">
@@ -72,7 +70,7 @@ const DataVerification = () => {
             </Link>
           </div>
 </Container>
-</div>
+
 
 
 

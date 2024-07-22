@@ -1,27 +1,20 @@
-.header {
+.header, .custom-background {
   width: 100% !important;
-  padding: 0 !important; /* Ensure no padding around the header */
-  margin: 0 !important; /* Ensure no margin around the header */
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .custom-background {
   background-color: #1C3B75;
-  width: 100% !important;
   color: #fff;
-  padding: 0 !important; /* Ensure no padding around the header */
-  margin: 0 !important; /* Optional: Add some padding for better spacing */
 }
 
 .container-fluid {
   padding: 0 !important;
 }
 
-.custom-background h1 {
-  color: #fff; /* Keep the specific color for the h1 element */
-}
-
-.custom-background .text-secondary {
-  color: #fff !important; /* Override the text-secondary class to be white */
+.custom-background h1, .custom-background .text-secondary {
+  color: #fff;
 }
 
 .head_left {
@@ -36,7 +29,7 @@
   border: 2px solid #659CFB;
   color: #fff;
   padding: 10px 20px;
-  border-radius: 50px; /* Makes the button rounded */
+  border-radius: 50px;
   background: transparent;
   display: flex;
   align-items: center;
@@ -79,7 +72,7 @@
   width: 90%;
   height: 90%;
   object-fit: cover;
-  margin-right: 5px !important; /* Adjust the margin-right value as needed */
+  margin-right: 5px !important;
 }
 
 .curve {

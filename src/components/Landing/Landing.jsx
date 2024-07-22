@@ -77,7 +77,7 @@ const FeaturesSection = () => {
         </Col>
     </Row>
       <div className="verification-process">
-      <h2 className="title">VERIFICATION PROCESS</h2>
+      <h2 className="title"><span className="yellow-underline">VERIFICATION</span> PROCESS</h2>
       <div className="steps">
         {steps.map((step) => (
           <div key={step.id} className="step">
@@ -132,7 +132,7 @@ const FeaturesSection = () => {
     </Row>
     <Row>
       <div className="w-75 mt-2 h_title">
-        <h1>Remote Video Verification</h1>
+        <h2 className="ml-10"><span className="yellow-underline">Remote </span>Video Verification</h2>
       </div>
       <Col md={4}>
         <FeatureCard

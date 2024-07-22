@@ -13,14 +13,14 @@
   transition: transform 0.3s, box-shadow 0.3s;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 15px;
-  transform: translateY(-20px);
+  /* transform: translateY(-20px); */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.feature-card:hover {
+/* .feature-card:hover {
   /* transform: translateY(-5px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); */
-}
+
 
 .card-title {
   font-size: 1.25rem;
@@ -160,7 +160,7 @@ opacity: 0px;
 
 /* src/VerificationProcess.css */
 .verification-process {
-  text-align: center;
+  /* text-align: center; */
   padding: 20px;
 }
 

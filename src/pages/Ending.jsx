@@ -5,25 +5,20 @@ import '../components/Dataverification/Ending.css'
 
 const Ending= () => {
   return (
-    <div className="container mt-5">
-    <Container>
-      <Row className="custom-background">
-      <Col md={6}>
-        <div className="head_left">
-          <div className="w-75 mt-2 h_title">
-            <h1>Seamless Real-time Identity Verification</h1>
+    <Container fluid >
+    <div className="header">
+        <div className="header-content">
+          {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
+          <div className="text-content">
+            <h1>DEVOSPACE</h1>
+            {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
+            <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
           </div>
         </div>
-      </Col>
-      <Col md={6}>
-        <div className="head_right">
-          <div className="imageContainer d-flex justify-content-end align-items-center shadow-sm rounded">
-            <img src={head_rightImg} alt="header-image" className="head_rightImg" />
-          </div>
+        <div className="image-container">
+          <img src={head_rightImg} alt="Verification Process" className="verification-image" />
         </div>
-      </Col>
-    </Row>
-      </Container>
+      </div>
       <div className="card">
         <div className="card-body">
           <h3 className="card-title text-center">Data Verification</h3>
@@ -70,7 +65,8 @@ const Ending= () => {
       <div className="text-center mt-4">
         <button className="btn btn-primary">Continue</button>
       </div>
-    </div>
+    
+      </Container>
   );
 };
 
