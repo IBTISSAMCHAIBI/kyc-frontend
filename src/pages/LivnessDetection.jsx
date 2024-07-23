@@ -13,6 +13,8 @@ const ScanFacePage = () => {
     spoofingDetected: false,
 };
   const [eyeLookOutLeftCompleted, setEyeLookOutLeftCompleted] = useState(false);
+  const [screenshotTaken, setScreenshotTaken] = useState(false);
+  const [screenshotCaptured, setScreenshotCaptured] = useState(false);
   const [eyeLookInRightCompleted, setEyeLookInRightCompleted] = useState(false);
   const [smileCompleted, setSmileCompleted] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
@@ -41,10 +43,6 @@ const ScanFacePage = () => {
 
     return () => clearInterval(intervalId); // Cleanup interval on component unmount
   }, [images.length]);
-
-  const resetVerificationState = () => {
-    setVerificationState(initialState);
-};
 
   useEffect(() => {
     const createFaceLandmarker = async () => {
@@ -263,6 +261,7 @@ const captureScreenshot = async () => {
 
             if (response.ok) {
               console.log('Screenshot saved successfully.');
+              setScreenshotCaptured(true);
               resolve();
             } else {
               reject('Failed to save screenshot');
@@ -286,7 +285,6 @@ const captureScreenshot = async () => {
 let currentStep = 0;
 let isPaused = false;
 let startTime = null;
-let screenshotTaken = false;
 
 const steps = [
   {
@@ -372,22 +370,23 @@ const updateCheckboxes = async (blendShapes) => {
       console.log("Eye Look In Right completed.");
     }
 
-    if (scores.mouthSmileRight >= 0.8 && scores.mouthSmileLeft >= 0.8 && !smileCompleted) {
+    if (scores.mouthSmileRight >= 0.8 && scores.mouthSmileLeft >= 0.8 &&  !smileCompleted) {
       setSmileCompleted(true);
       setMouthSmileRightScore(scores.mouthSmileRight);
       setMouthSmileLeftScore(scores.mouthSmileLeft);
       console.log("Smile completed.");
-    }
-
-    if (!screenshotTaken) {
-      try {
-        await captureScreenshot();
-        console.log('Screenshot captured and webcam turned off.');
-        screenshotTaken = true;
-      } catch (error) {
-        console.error('Error capturing screenshot:', error);
+      if (!screenshotTaken)  {
+        try {
+          await captureScreenshot();
+          console.log('Screenshot captured and webcam turned off.');
+          setScreenshotTaken(true);
+        } catch (error) {
+          console.error('Error capturing screenshot:', error);
+        }
       }
     }
+
+ 
   }
 };
 
@@ -424,6 +423,7 @@ const stopWebcamAndLogic = (message) => {
       <img src='/icon3.png' alt="check icon" className="status-icon" />
       <h2 className="mt-4">Scanning your face</h2>
       <p>Please wait for the scan to complete before proceeding to the next step</p>
+      <p>if you want to continue you ve to resoect t order of t steps </p> 
       <div className="scan-status">
         <div className="mb-3">
           <label htmlFor="right">Look Right</label>
@@ -518,11 +518,15 @@ const stopWebcamAndLogic = (message) => {
     <button onClick={handleWebcamEnable} className="btn btn-primary">
       {webcamRunning ? 'Stop Webcam' : 'Go to Liveness Detection'}
     </button>
-    <div className="button-container">
-            <Link to="/Document">
-              <button className="continue-button">CONTINUE</button>
-            </Link>
-          </div>
+    <div>
+      {screenshotCaptured && (
+        <div className="button-container">
+          <Link to="/selfie">
+            <button className="continue-button">CONTINUE</button>
+          </Link>
+        </div>
+      )}
+    </div>
   </Col>
 </Row>
 </Container>

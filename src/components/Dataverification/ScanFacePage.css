@@ -30,3 +30,42 @@
   background: #659CFB;
   color: #fff;
 }
+/* Styles for the success message */
+.success-message {
+  color: #28a745; /* Green color */
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+/* Styles for the error message */
+.error-message {
+  color: #dc3545; /* Red color */
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+/* Styles for the continue button */
+.continue-button {
+  background-color: #007bff; /* Blue color */
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 0.25em;
+  margin-top: 1em;
+}
+
+/* Styles for the hold back button */
+.holdback-button {
+  background-color: #6c757d; /* Gray color */
+  color: white;
+  border: none;
+  padding: 0.5em 1em;
+  font-size: 1em;
+  cursor: pointer;
+  border-radius: 0.25em;
+  margin-top: 1em;
+}

@@ -8,6 +8,7 @@ import ScanFacePage from './pages/LivnessDetection';
 import DataVerification from './pages/DocumentVerification';
 import ScanCrad from './pages/ScanCard';
 import VerificationCompleted from './pages/VerificationCompleted';
+import  TakeSelfie from './pages/TakeSelfie';
 import Ending from './pages/Ending';
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/process" element={<DataVerificationProcess/>} />
         <Route path="/scan" element={<ScanFacePage/>} />
+        <Route path="/selfie" element={<TakeSelfie/>} />
         <Route path="/Document" element={<DataVerification/>} />
         <Route path="/scancard" element={<ScanCrad/>} />
         <Route path="/dataverficationcompleted" element={<VerificationCompleted/>} />

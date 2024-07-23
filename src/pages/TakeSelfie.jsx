@@ -5,8 +5,9 @@ import { Container } from 'react-bootstrap';
 import '../components/Dataverification/ScanFacePage.css'; 
 import head_rightImg from '../assets/head_rightImg.png';
 import logo from '../assets/logo.png';// Import the CSS file
+import { Link } from 'react-router-dom';
 
-function ScanCrad() {
+function TakeSelfie() {
     const [idImageCaptured, setIdImageCaptured] = useState(false);
     const [idImage, setIdImage] = useState(null);
     const [selfieImage, setSelfieImage] = useState(null);
@@ -35,27 +36,46 @@ function ScanCrad() {
         setShowIdWebcam(false);
     };
 
+    const uploadSelfieImage = async (file) => {
+        const formData = new FormData();
+        formData.append('selfie_image', file);
+        try {
+            const response = await fetch('http://127.0.0.1:5000/upload-selfie', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to upload selfie');
+            }
+
+            const data = await response.json();
+            console.log(data.message);
+        } catch (error) {
+            console.error('Error uploading selfie:', error);
+        }
+    };
+
     const fetchSavedSelfie = async () => {
-      try {
-          const response = await fetch('http://127.0.0.1:5000/get-selfie', {
-              method: 'GET',
-          });
-          if (!response.ok) {
-              throw new Error('Failed to fetch selfie');
-          }
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          setSelfieImageUrl(url);
-          const file = new File([blob], "saved_selfie.png", { type: "image/png" });
-          setSelfieImage(file);
-      } catch (error) {
-          console.error('Error fetching saved selfie:', error);
-      }
-  };
-  
+        try {
+            const response = await fetch('http://127.0.0.1:5000/get-screenshot', {
+                method: 'GET',
+            });
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setSelfieImageUrl(url);
+            const file = new File([blob], "saved_selfie.jpg", { type: "image/jpeg" });
+            setSelfieImage(file);
+        } catch (error) {
+            console.error('Error fetching saved selfie:', error);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (idImageCaptured) {
+            await uploadSelfieImage(idImage);
+        }
         const formData = new FormData();
         formData.append('id_image', idImage);
         formData.append('selfie_image', selfieImage);
@@ -114,31 +134,47 @@ function ScanCrad() {
         </div>
         {idImageCaptured && (
           <div className="capture-container">
-            <button type="button" onClick={fetchSavedSelfie} className="capture-button">Use saved selfie</button>
-            {selfieImageUrl && (
-              <div className="image-preview">
-                <img src={selfieImageUrl} alt="Selfie" width={160} height={160} className="preview-image" />
-              </div>
-            )}
+            <button type="button" onClick={fetchSavedSelfie} className="capture-button">Start verification </button>
           </div>
         )}
-        {selfieImage && (
+        { selfieImage && (
+        <div className="capture-container">
           <form onSubmit={handleSubmit} className="verification-form">
-            <button type="submit" className="submit-button">Submit</button>
+            <button type="submit" className="submit-button">Start verification</button>
           </form>
+          </div>
         )}
         {error && <div className="error-message">{error}</div>}
         {result && (
-          <div className="result-container">
-            <h2>Result</h2>
-            <p>Similarity Score: {result.similarity_score}</p>
-            <p>Match Status: {result.match_status}</p>
-          </div>
-        )}
+                    <div className="result-container">
+                        {/* <h2>Result</h2>
+                        <p className={result.similarity_score > 0.50 ? 'success-message' : 'error-message'}>
+                            Similarity Score: {result.similarity_score}
+                        </p>
+                        <p className={result.similarity_score > 0.50 ? 'success-message' : 'error-message'}>
+                            Match Status: {result.match_status}
+                        </p> */}
+                        {result.similarity_score > 0.50 ? (
+                            <div>
+                                <Link to ="/Document">
+                                <p className="success-message">You are verified and can proceed to card and information verification.</p>
+                                <button   className="continue-button">Continue</button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div>
+                                <Link to="/scan">
+                                <p className="error-message">We can't ensure that you are the live person.</p>
+                                <button  className="holdback-button">Hold Back</button>
+                                </Link>
+                            </div>
+                        )}
+                    </div>
+                )}
       </div>
     </Container>
 
     );
 }
 
-export default ScanCrad;
+export default  TakeSelfie;
