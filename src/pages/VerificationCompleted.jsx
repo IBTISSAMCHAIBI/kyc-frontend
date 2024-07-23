@@ -2,6 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import head_rightImg from '../assets/headerRght.png';
 import '../components/Dataverification/DataVerification.css';
+
 import { Link } from 'react-router-dom';
 
 function VerificationCompleted () {
@@ -30,9 +31,9 @@ function VerificationCompleted () {
         </Row>
         <Row className="justify-content-center mt-5">
           <Col md={6} className="text-center">
-           <Link to="/ending">
+           {/* <Link to="/ending">
             <Button size="lg">Continue</Button>
-        </Link>
+        </Link> */}
           </Col>
         </Row>
       </Container>
