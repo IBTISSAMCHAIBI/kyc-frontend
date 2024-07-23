@@ -1,0 +1,30 @@
+.scan-image {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .webcam-container {
+    position: relative;
+  }
+  
+  img.scan-image {
+    display: block;
+  }
+  
+  video.scan-image {
+    display: none;
+  }
+  
+  button.continue-button {
+    margin-bottom: 10px;
+  }
+  
+  .webcam-container video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .webcam-container img {
+    display: none; /* This hides the image when webcam is active */
+  }
+  
