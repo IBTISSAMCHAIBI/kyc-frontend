@@ -9,12 +9,14 @@ import DataVerification from './pages/DocumentVerification';
 import ScanCrad from './pages/ScanCard';
 import VerificationCompleted from './pages/VerificationCompleted';
 import  TakeSelfie from './pages/TakeSelfie';
+import Dashboard from './pages/Dashboard';
 import Ending from './pages/Ending';
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/process" element={<DataVerificationProcess/>} />
         <Route path="/scan" element={<ScanFacePage/>} />

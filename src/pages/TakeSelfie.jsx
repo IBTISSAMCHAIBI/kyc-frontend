@@ -38,7 +38,7 @@ function TakeSelfie() {
 
     const uploadSelfieImage = async (file) => {
         const formData = new FormData();
-        formData.append('selfie_image', file);
+        formData.append('selfie', file);
         try {
             const response = await fetch('http://127.0.0.1:5000/upload-selfie', {
                 method: 'POST',
@@ -154,7 +154,7 @@ function TakeSelfie() {
                         <p className={result.similarity_score > 0.50 ? 'success-message' : 'error-message'}>
                             Match Status: {result.match_status}
                         </p> */}
-                        {result.similarity_score > 0.50 ? (
+                        {result.similarity_score > 0.20 ? (
                             <div>
                                 <Link to ="/Document">
                                 <p className="success-message">You are verified and can proceed to card and information verification.</p>

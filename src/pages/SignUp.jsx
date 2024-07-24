@@ -1,10 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import subscribe from '../assets/subscribe.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../components/Login/Login.css';
+import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
+import { app } from '../firebase';
 
 const SignUp = () => {
+  const [firstName, setFirstName] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate(); // Initialize useNavigate hook
+
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth(app);
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log('Google User Info:', user);
+      setMessage('Successfully signed up with Google!');
+      setSuccess(true);
+      // Redirect to login page
+      navigate('/Login');
+    } catch (error) {
+      console.error('Error signing in with Google:', error.message);
+      setMessage('Error signing up with Google.');
+      setSuccess(false);
+    }
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    console.log('Sign-Up Button Clicked'); // Debug log
+    try {
+      const response = await axios.post('http://localhost:5000/register', { first_name: firstName, password: password });
+      console.log('Response:', response.data); // Debug log
+      setMessage('Successfully signed up!');
+      setSuccess(true);
+      // Redirect to login page
+      navigate('/Login');
+    } catch (error) {
+      console.error('Error:', error); // Debug log
+      setMessage(error.response?.data?.msg || 'An error occurred');
+      setSuccess(false);
+    }
+  };
+
   return (
     <Container fluid className="login-container">
       <Row className="w-100">
@@ -17,18 +62,18 @@ const SignUp = () => {
         </Col>
         <Col md={7} className="login-right">
           <div className="login-form">
-            <Button variant="outline-primary" className="google-btn">
-              <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" /> Sign in with Google
+            <Button variant="outline-primary" className="google-btn" onClick={handleGoogleSignUp}>
+              <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" /> Continue with Google
             </Button>
             <hr className="divider" />
-            <Form>
+            <Form onSubmit={handleSignUp}>
               <Form.Group controlId="formFirstName">
                 <Form.Label>First Name</Form.Label>
-                <Form.Control type="text" placeholder="First Name" />
+                <Form.Control type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
               </Form.Group>
               <Form.Group controlId="formPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" />
+                <Form.Control type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 <Form.Text className="text-right">
                   <a href="#" className="forgot-password">Forgot password?</a>
                 </Form.Text>
@@ -36,14 +81,13 @@ const SignUp = () => {
               <Form.Group controlId="formCheckbox">
                 <Form.Check type="checkbox" label="Stay logged in for one week" />
               </Form.Group>
-              <Link to="/Login">
               <Button variant="primary" type="submit" className="login-btn">
                 Sign Up
               </Button>
-              </Link>
               <p className="signup-link">
-                do you  have an account? <Link to="/Login">Login</Link>
+                Do you have an account? <Link to="/Login">Login</Link>
               </p>
+              {message && <p className={success ? 'text-success' : 'text-danger'}>{message}</p>}
             </Form>
           </div>
         </Col>
