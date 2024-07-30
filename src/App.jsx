@@ -2,30 +2,90 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import SignUp from "./pages/SignUp"
+import SignUp from "./pages/SignUp";
 import DataVerificationProcess from './pages/DataVerificationProcess';
-import ScanFacePage from './pages/LivnessDetection'; 
+import ScanFacePage from './pages/LivnessDetection';
 import DataVerification from './pages/DocumentVerification';
-import ScanCrad from './pages/ScanCard';
+import ScanCard from './pages/ScanCard'; // Corrected typo: ScanCrad -> ScanCard
 import VerificationCompleted from './pages/VerificationCompleted';
-import  TakeSelfie from './pages/TakeSelfie';
+import TakeSelfie from './pages/TakeSelfie';
 import Dashboard from './pages/Dashboard';
 import Ending from './pages/Ending';
+import ProtectedRoute from './pages/ProtectedRoute'; // Import ProtectedRoute
+
 const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/SignUp" element={<SignUp />} />
-        <Route path="/process" element={<DataVerificationProcess/>} />
-        <Route path="/scan" element={<ScanFacePage/>} />
-        <Route path="/selfie" element={<TakeSelfie/>} />
-        <Route path="/Document" element={<DataVerification/>} />
-        <Route path="/scancard" element={<ScanCrad/>} />
-        <Route path="/dataverficationcompleted" element={<VerificationCompleted/>} />
-        <Route path="/ending" element={<Ending/>} />
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
+        
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/Document"
+          element={
+            <ProtectedRoute>
+              <DataVerification />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/process"
+          element={
+            <ProtectedRoute>
+              <DataVerificationProcess />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/scan"
+          element={
+            <ProtectedRoute>
+              <ScanFacePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/selfie"
+          element={
+            <ProtectedRoute>
+              <TakeSelfie />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/scancard"
+          element={
+            <ProtectedRoute>
+              <ScanCard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dataverficationcompleted"
+          element={
+            <ProtectedRoute>
+              <VerificationCompleted />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ending"
+          element={
+            <ProtectedRoute>
+              <Ending />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

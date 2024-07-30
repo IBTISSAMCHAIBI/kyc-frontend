@@ -225,6 +225,59 @@ const [mouthSmileRightScore, setMouthSmileRightScore] = useState(0);
 const [mouthSmileLeftScore, setMouthSmileLeftScore] = useState(0);
 const [spoofingDetected, setSpoofingDetected] = useState(false);
 
+// const captureScreenshot = async () => {
+//   try {
+//     // Access the webcam stream
+//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//     const videoElement = document.createElement('video');
+//     videoElement.srcObject = stream;
+//     videoElement.play();
+
+//     return new Promise((resolve, reject) => {
+//       videoElement.addEventListener('loadedmetadata', () => {
+//         const canvas = document.createElement('canvas');
+//         canvas.width = videoElement.videoWidth;
+//         canvas.height = videoElement.videoHeight;
+//         const ctx = canvas.getContext('2d');
+//         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+//         canvas.toBlob(async (blob) => {
+//           if (!blob) {
+//             reject('Failed to capture screenshot');
+//             return;
+//           }
+
+//           // Send screenshot to backend
+//           const formData = new FormData();
+//           formData.append('screenshot', blob, 'screenshot.png');
+
+//           try {
+//             const response = await fetch('http://127.0.0.1:5000/save-screenshot', {
+//               method: 'POST',
+//               body: formData,
+//             });
+
+//             if (response.ok) {
+//               console.log('Screenshot saved successfully.');
+//               resolve();
+//             } else {
+//               reject('Failed to save screenshot');
+//             }
+//           } catch (error) {
+//             reject('Error sending screenshot: ' + error.message);
+//           } finally {
+//             videoElement.pause();
+//             stream.getVideoTracks()[0].stop();
+//             videoElement.remove();
+//           }
+//         }, 'image/png');
+//       });
+//     });
+//   } catch (error) {
+//     console.error('Error accessing webcam:', error);
+//     throw error;
+//   }
+// };
 
 
 const captureScreenshot = async () => {
@@ -405,6 +458,7 @@ const stopWebcamAndLogic = (message) => {
 <Row>
   <Col md={6}>
     <div className="verification-steps">
+      <h1></h1>
       <h2 className="mb-4">Verification Steps</h2>
       <ul className="list-unstyled">
         <li className={`d-flex align-items-center mb-2 ${eyeLookOutLeftCompleted ? 'completed' : ''}`}>

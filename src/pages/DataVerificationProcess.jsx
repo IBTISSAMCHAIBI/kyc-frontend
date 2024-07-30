@@ -1,12 +1,14 @@
-// src/DataVerificationProcess.js
-import React, { useState } from 'react';
-import { Container } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Button } from 'react-bootstrap';
 import '../components/Dataverification/DataVerification.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import head_rightImg from '../assets/head_rightImg.png';
 import logo from '../assets/logo.png';
+import axios from 'axios';
 
 const DataVerificationProcess = () => {
+  const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
 
@@ -15,14 +17,55 @@ const DataVerificationProcess = () => {
     setIsButtonEnabled(!isChecked);
   };
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          navigate('/login'); // Redirect to login if not authenticated
+          return;
+        }
+
+        const response = await axios.get('http://localhost:5000/dashboard', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setUserData(response.data.user_data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        navigate('/login'); // Redirect to login if there's an error
+      }
+    };
+
+    fetchUserData();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/logout', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      localStorage.removeItem('token'); // Clear the token
+      navigate('/login'); // Redirect to the login page
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
-    <Container fluid >
+    <Container fluid>
       <div className="header">
         <div className="header-content">
-          {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
+          {userData ? (
+            <>
+              <h1>Welcome, {userData.first_name}!</h1>
+              <p>Email: {userData.email}</p>
+            </>
+          ) : (
+            <p>Loading user data...</p>
+          )}
           <div className="text-content">
             <h1>DEVOSPACE</h1>
-            {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
             <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
           </div>
         </div>
@@ -35,7 +78,7 @@ const DataVerificationProcess = () => {
         <div className="verification-items">
           <div className="item">
             <div className="icon">
-              <img src='/icon1.png'alt="Icon" />
+              <img src='/icon1.png' alt="Icon" />
             </div>
             <div className="description">
               <h3>Identity document verification</h3>
@@ -58,10 +101,11 @@ const DataVerificationProcess = () => {
             I consent to my personal information being processed by a third party for identity verification.
           </label>
         </div>
+        <Button variant="danger" onClick={handleLogout} style={{ marginTop: '20px' }}>Logout</Button>
         <Link to="/scan">
-          <button className="continue-button" disabled={!isButtonEnabled}>
-            Continue
-          </button>
+          <Button>
+            Start verification process
+          </Button>
         </Link>
       </div>
     </Container>

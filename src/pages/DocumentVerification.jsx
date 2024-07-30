@@ -8,7 +8,7 @@ import head_rightImg from '../assets/headerRght.png';
 import { useState } from 'react';
 
 
-const iconStyle = { color: 'blue' };
+
 
 const DataVerification = () => {
   const [selectedDocument, setSelectedDocument] = useState('');
@@ -87,7 +87,7 @@ const DataVerification = () => {
         </Col>
     </Row>
     <div className="text-center mt-4">
-        <Link to="/scancard">
+        <Link to="/scan">
             <Button variant="primary" size="lg" disabled={!selectedDocument}>Continue</Button>
         </Link>
     </div>

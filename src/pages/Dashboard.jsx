@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
   const [file, setFile] = useState(null);
@@ -106,6 +107,11 @@ const Dashboard = () => {
           <Button variant="secondary" onClick={handleFileRetrieval} style={{ marginLeft: '10px' }}>Retrieve Screenshot</Button>
           {imageUrl && <img src={imageUrl} alt="Uploaded screenshot" style={{ marginTop: '20px', maxWidth: '100%' }} />}
           <Button variant="danger" onClick={handleLogout} style={{ marginTop: '20px' }}>Logout</Button>
+          <Link to="/process">
+          <Button>
+            start verification process 
+          </Button>
+          </Link>
         </Col>
       </Row>
     </Container>

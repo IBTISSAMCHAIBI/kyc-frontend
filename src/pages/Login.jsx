@@ -29,7 +29,7 @@ const Login = () => {
       localStorage.setItem('token', response.data.access_token);  // Store the JWT token
       setMessage('Successfully authenticated with Google!');
       setSuccess(true);
-      navigate('/dashboard');  // Redirect to the dashboard
+      navigate('/process');  // Redirect to the dashboard
     } catch (error) {
       console.error('Error signing in with Google:', error.message);
       setMessage('Error signing up with Google.');
@@ -44,7 +44,7 @@ const Login = () => {
       setMessage(response.data.msg);
       localStorage.setItem('token', response.data.access_token);  // Store the JWT token
       setSuccess(true);
-      navigate('/dashboard');  // Redirect to the dashboard
+      navigate('/process');  // Redirect to the dashboard
     } catch (error) {
       setMessage(error.response?.data?.msg || 'An error occurred');
       setSuccess(false);

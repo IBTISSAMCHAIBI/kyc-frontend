@@ -156,7 +156,7 @@ function TakeSelfie() {
                         </p> */}
                         {result.similarity_score > 0.20 ? (
                             <div>
-                                <Link to ="/Document">
+                                <Link to ="/scancard">
                                 <p className="success-message">You are verified and can proceed to card and information verification.</p>
                                 <button   className="continue-button">Continue</button>
                                 </Link>
