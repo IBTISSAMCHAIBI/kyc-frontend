@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import { app } from '../firebase';
 
 const Login = () => {
-  const [firstName, setFirstName] = useState('');
+  const [username, setUsername] = useState(''); // Changed from firstName to username
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
@@ -26,7 +26,7 @@ const Login = () => {
       // Optionally, you can send this token to your backend
       const response = await axios.post('http://localhost:5000/google-login', { token });
 
-      localStorage.setItem('token', response.data.access_token);  // Store the JWT token
+      localStorage.setItem('token', response.data.token);  // Store the JWT token
       setMessage('Successfully authenticated with Google!');
       setSuccess(true);
       navigate('/process');  // Redirect to the dashboard
@@ -40,13 +40,13 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { first_name: firstName, password: password });
-      setMessage(response.data.msg);
-      localStorage.setItem('token', response.data.access_token);  // Store the JWT token
+      const response = await axios.post('http://localhost:5000/login', { username, password });  // Adjusted to use username
+      localStorage.setItem('token', response.data.token);  // Store the JWT token
+      setMessage('Successfully logged in!');
       setSuccess(true);
       navigate('/process');  // Redirect to the dashboard
     } catch (error) {
-      setMessage(error.response?.data?.msg || 'An error occurred');
+      setMessage(error.response?.data?.error || 'An error occurred');  // Adjusted to use error
       setSuccess(false);
     }
   };
@@ -68,9 +68,9 @@ const Login = () => {
             </Button>
             <hr className="divider" />
             <Form onSubmit={handleLogin}>
-              <Form.Group controlId="formFirstName">
-                <Form.Label>First Name</Form.Label>
-                <Form.Control type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <Form.Group controlId="formUsername">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
               </Form.Group>
               <Form.Group controlId="formPassword">
                 <Form.Label>Password</Form.Label>

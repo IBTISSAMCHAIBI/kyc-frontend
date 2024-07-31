@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import { app } from '../firebase';
 
 const SignUp = () => {
-  const [firstName, setFirstName] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
@@ -37,7 +37,7 @@ const SignUp = () => {
     e.preventDefault();
     console.log('Sign-Up Button Clicked'); // Debug log
     try {
-      const response = await axios.post('http://localhost:5000/register', { first_name: firstName, password: password });
+      const response = await axios.post('http://localhost:5000/create_user', { username: username, password: password });
       console.log('Response:', response.data); // Debug log
       setMessage('Successfully signed up!');
       setSuccess(true);
@@ -45,7 +45,7 @@ const SignUp = () => {
       navigate('/Login');
     } catch (error) {
       console.error('Error:', error); // Debug log
-      setMessage(error.response?.data?.msg || 'An error occurred');
+      setMessage(error.response?.data?.error || 'An error occurred');
       setSuccess(false);
     }
   };
@@ -56,7 +56,7 @@ const SignUp = () => {
         <Col md={5} className="login-left">
           <div className="login-welcome">
             <h1>Sign Up</h1>
-            <p>Welcome back to DEVOSPACE. Please enter your credentials below to access your account.</p>
+            <p>Welcome to DEVOSPACE. Please enter your credentials below to create a new account.</p>
             <img src={subscribe} alt="Login Image" className="login-image" />
           </div>
         </Col>
@@ -67,9 +67,9 @@ const SignUp = () => {
             </Button>
             <hr className="divider" />
             <Form onSubmit={handleSignUp}>
-              <Form.Group controlId="formFirstName">
-                <Form.Label>First Name</Form.Label>
-                <Form.Control type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <Form.Group controlId="formUsername">
+                <Form.Label>Username</Form.Label>
+                <Form.Control type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
               </Form.Group>
               <Form.Group controlId="formPassword">
                 <Form.Label>Password</Form.Label>

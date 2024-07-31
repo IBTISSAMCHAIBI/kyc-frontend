@@ -42,15 +42,27 @@ const DataVerificationProcess = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/logout', {}, {
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+  
+      const response = await axios.post('http://localhost:5000/logout', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      localStorage.removeItem('token'); // Clear the token
-      navigate('/login'); // Redirect to the login page
+  
+      // Process the server response
+      const { message } = response.data;
+      console.log(message); // Log the message for debugging
+  
+      // Clear the token and redirect to login page
+      localStorage.removeItem('token');
+      navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+  
 
   return (
     <Container fluid>
@@ -58,7 +70,7 @@ const DataVerificationProcess = () => {
         <div className="header-content">
           {userData ? (
             <>
-              <h1>Welcome, {userData.first_name}!</h1>
+              <h1>Welcome, {userData.username}!</h1>
               <p>Email: {userData.email}</p>
             </>
           ) : (
