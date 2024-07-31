@@ -36,20 +36,32 @@ const Login = () => {
       setSuccess(false);
     }
   };
-
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', { username, password });  // Adjusted to use username
-      localStorage.setItem('token', response.data.token);  // Store the JWT token
+      // Make the API call to login
+      const response = await axios.post('http://localhost:5000/login', { username, password });
+  
+      // Store the token and username in localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', username);  // Store username
+  
+      // Optionally, store any other user data if returned from the server
+      // localStorage.setItem('userData', JSON.stringify(response.data.userData));
+  
       setMessage('Successfully logged in!');
       setSuccess(true);
-      navigate('/process');  // Redirect to the dashboard
+  
+      // Redirect to the dashboard
+      navigate('/process');
     } catch (error) {
-      setMessage(error.response?.data?.error || 'An error occurred');  // Adjusted to use error
+      // Handle errors
+      setMessage(error.response?.data?.error || 'An error occurred');
       setSuccess(false);
     }
   };
+  
 
   return (
     <Container fluid className="login-container">

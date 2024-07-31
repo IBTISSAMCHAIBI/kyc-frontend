@@ -42,26 +42,21 @@ const DataVerificationProcess = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
-      }
-  
-      const response = await axios.post('http://localhost:5000/logout', {}, {
+      await axios.post('http://localhost:5000/logout', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
   
-      // Process the server response
-      const { message } = response.data;
-      console.log(message); // Log the message for debugging
-  
-      // Clear the token and redirect to login page
+      // Clear localStorage on logout
       localStorage.removeItem('token');
+      localStorage.removeItem('username');
+  
+      // Redirect to login
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
+  
   
 
   return (

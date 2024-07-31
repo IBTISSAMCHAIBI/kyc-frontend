@@ -55,81 +55,102 @@ const ScanCard = () => {
       }, 'image/jpeg');
     }
   };
-
   const sendImage = async (blob) => {
     const formData = new FormData();
-    formData.append('capture', blob, 'capture.jpg');
+    formData.append('file', blob, 'card.jpg'); // The form field name should match the one in Flask
 
-    try {
-      const response = await fetch('http://localhost:5000/upload-card', {
-        method: 'POST',
-        body: formData,
-      });
-      if (response.ok) {
-        console.log('Image uploaded successfully');
-        stopWebcam();
-        fetchCapturedImage();
-      } else {
-        console.error('Image upload failed');
-      }
-    } catch (error) {
-      console.error('Error uploading image:', error);
+    // Get the username and token from localStorage or any other source
+    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
+    
+    if (!username) {
+        console.error('Username not found in localStorage');
+        return;
     }
-  };
 
-  const fetchCapturedImage = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/get-card');
-      if (response.ok) {
-        const imageBlob = await response.blob();
-        const imageURL = URL.createObjectURL(imageBlob);
-        console.log('Fetched Image URL:', imageURL);
-        setCapturedImage(imageURL);
-        setIsImageDisplayed(false);
-      } else {
-        console.error('Failed to fetch captured image');
-      }
-    } catch (error) {
-      console.error('Error fetching captured image:', error);
+    if (!token) {
+        console.error('Token not found in localStorage');
+        return;
     }
-  };
 
-  const handleDisplayImage = () => {
-    setIsImageDisplayed(true);
-  };
-
-  const verifyImageQuality = async () => {
     try {
-      const response = await fetch('http://localhost:5000/get-card');
-      if (response.ok) {
-        const imageBlob = await response.blob();
-        const formData = new FormData();
-        formData.append('capture', imageBlob, 'capture.jpg');
-
-        const verificationResponse = await fetch('http://localhost:5000/faces_exist', {
-          method: 'POST',
-          body: formData,
+        const response = await fetch(`http://localhost:5000/upload-card/${username}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include token in the headers
+            },
         });
 
-        const result = await verificationResponse.json();
-        setVerificationMessage(result.message);
-
-        if (result.message === 'Good face detected') {
-          setInputStyle({ color: 'green' });
-          setInputText('face well detected');
-          setInputIcon('/checked.png');
-        } else if (result.message === 'Try again, no face detected') {
-          setInputStyle({ color: 'red' });
-          setInputText('No face detected');
-          setInputIcon('/spoofing-detected.png');
+        if (response.ok) {
+            console.log('Image uploaded successfully');
+            // Call verifyImageQuality after successful upload
+            verifyImageQuality();
+        } else {
+            console.error('Image upload failed');
         }
-      } else {
-        console.error('Failed to fetch captured image');
-        setVerificationMessage('Failed to fetch captured image');
+    } catch (error) {
+        console.error('Error uploading image:', error);
+    }
+};
+
+  const verifyImageQuality = async () => {
+    const username = localStorage.getItem('username'); // Retrieve the username from localStorage
+    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+
+    if (!username || !token) {
+      console.error('Username or token not found in localStorage');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/check_faces_in_image/${username}/card.jpg`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include token in the headers
+        },
+      });
+
+      const result = await response.json();
+      setVerificationMessage(result.message);
+
+      if (result.message === 'Good face detected') {
+        setInputStyle({ color: 'green' });
+        setInputText('Face well detected');
+        setInputIcon('/checked.png');
+      } else if (result.message === 'Try again, no face detected') {
+        setInputStyle({ color: 'red' });
+        setInputText('No face detected');
+        setInputIcon('/spoofing-detected.png');
       }
     } catch (error) {
       console.error('Error verifying image quality:', error);
       setVerificationMessage('Error verifying image quality');
+    }
+  };
+
+  const verifyCardFaces = async () => {
+    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
+
+    if (!username || !token) {
+      console.error('Username or token not found in localStorage');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/card_faces/${username}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      const result = await response.json();
+      setVerificationMessage(result.match_status);
+      console.log(result);
+    } catch (error) {
+      console.error('Error verifying card faces:', error);
     }
   };
 
@@ -161,7 +182,7 @@ const ScanCard = () => {
               <img src={inputIcon} alt="status icon" className="status-icon ms-2" />
             </div>
             <div className="input-group">
-              <input type="text"  value ={inputText} id="smile" name="smile" disabled readOnly style={inputStyle}  />
+              <input type="text" value={inputText} id="smile" name="smile" disabled readOnly style={inputStyle} />
               <img src={inputIcon} alt="progress icon" className="status-icon ms-2" />
             </div>
           </div>
@@ -200,26 +221,19 @@ const ScanCard = () => {
             >
               Take Picture
             </button>
-            {capturedImage && !isImageDisplayed && (
-              <button
-                onClick={handleDisplayImage}
-                className="continue-button btn btn-secondary mt-3"
-              >
-                Display Image
-              </button>
-            )}
-            {isImageDisplayed && (
               <button
                 onClick={verifyImageQuality}
                 className="continue-button btn btn-secondary mt-3"
               >
                 Verify Image Quality
               </button>
-            )}
             <div className="button-container mt-2">
-              <Link to="/dataverficationcompleted">
-                <button className="continue-button btn btn-secondary">verification</button>
-              </Link>
+            <button
+                onClick={verifyCardFaces}
+                className="continue-button btn btn-secondary"
+              >
+                Verification
+              </button>
             </div>
           </div>
         </div>

@@ -280,6 +280,62 @@ const [spoofingDetected, setSpoofingDetected] = useState(false);
 // };
 
 
+// const captureScreenshot = async () => {
+//   try {
+//     // Access the webcam stream
+//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//     const videoElement = document.createElement('video');
+//     videoElement.srcObject = stream;
+//     videoElement.play();
+
+//     return new Promise((resolve, reject) => {
+//       videoElement.addEventListener('loadedmetadata', () => {
+//         const canvas = document.createElement('canvas');
+//         canvas.width = videoElement.videoWidth;
+//         canvas.height = videoElement.videoHeight;
+//         const ctx = canvas.getContext('2d');
+//         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+//         canvas.toBlob(async (blob) => {
+//           if (!blob) {
+//             reject('Failed to capture screenshot');
+//             return;
+//           }
+
+//           // Send screenshot to backend
+//           const formData = new FormData();
+//           formData.append('screenshot', blob, 'screenshot.png');
+
+//           try {
+//             const response = await fetch('http://127.0.0.1:5000/save-screenshot', {
+//               method: 'POST',
+//               body: formData,
+//             });
+
+//             if (response.ok) {
+//               console.log('Screenshot saved successfully.');
+//               setScreenshotCaptured(true);
+//               resolve();
+//             } else {
+//               reject('Failed to save screenshot');
+//             }
+//           } catch (error) {
+//             reject('Error sending screenshot: ' + error.message);
+//           } finally {
+//             videoElement.pause();
+//             stream.getVideoTracks()[0].stop();
+//             videoElement.remove();
+//           }
+//         }, 'image/png');
+//       });
+//     });
+//   } catch (error) {
+//     console.error('Error accessing webcam:', error);
+//     throw error;
+//   }
+// };
+
+
 const captureScreenshot = async () => {
   try {
     // Access the webcam stream
@@ -302,14 +358,24 @@ const captureScreenshot = async () => {
             return;
           }
 
+          // Get username from localStorage or any other source
+          const username = localStorage.getItem('username');
+          if (!username) {
+            reject('No username found');
+            return;
+          }
+
           // Send screenshot to backend
           const formData = new FormData();
-          formData.append('screenshot', blob, 'screenshot.png');
+          formData.append('file', blob, 'screenshot.png');
 
           try {
-            const response = await fetch('http://127.0.0.1:5000/save-screenshot', {
+            const response = await fetch(`http://127.0.0.1:5000/upload-screenshot/${username}`, {
               method: 'POST',
               body: formData,
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // Include token in headers
+              }
             });
 
             if (response.ok) {
@@ -334,6 +400,7 @@ const captureScreenshot = async () => {
     throw error;
   }
 };
+
 
 let currentStep = 0;
 let isPaused = false;
