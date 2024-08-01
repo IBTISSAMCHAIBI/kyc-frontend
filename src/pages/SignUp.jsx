@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import subscribe from '../assets/subscribe.png';
 import { Link, useNavigate } from 'react-router-dom';

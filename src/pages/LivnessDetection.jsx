@@ -1,41 +1,129 @@
-import { Container, Row, Col ,Form} from 'react-bootstrap';
-import React, { useEffect, useRef, useState } from 'react';
+import { Container, Row, Col , Button} from 'react-bootstrap';
+import  { useEffect, useRef, useState } from 'react';
 import vision from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
 import '../components/Dataverification/ScanFacePage.css';
-import { Link } from 'react-router-dom';
+import { Link  ,useNavigate} from 'react-router-dom';
+import axios from 'axios';
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 const ScanFacePage = () => {
 
-  const initialState = {
-    eyeLookOutLeftCompleted: false,
-    eyeLookInRightCompleted: false,
-    smileCompleted: false,
-    spoofingDetected: false,
-};
   const [eyeLookOutLeftCompleted, setEyeLookOutLeftCompleted] = useState(false);
-  const [screenshotTaken, setScreenshotTaken] = useState(false);
   const [screenshotCaptured, setScreenshotCaptured] = useState(false);
   const [eyeLookInRightCompleted, setEyeLookInRightCompleted] = useState(false);
   const [smileCompleted, setSmileCompleted] = useState(false);
-  const [showWebcam, setShowWebcam] = useState(false);
   const [webcamEnabled, setWebcamEnabled] = useState(false);
   const [imageIndex, setImageIndex] = useState(0);
   const [faceLandmarker, setFaceLandmarker] = useState(null);
   const [runningMode, setRunningMode] = useState("IMAGE");
-  const [webcamRunning, setWebcamRunning] = useState(false);
-  const [screenshotURL, setScreenshotURL] = useState(null);
+  const [webcamRunning, setWebcamRunning] = useState(false);;
   const [enableWebcamButton, setEnableWebcamButton] = useState(false);
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const videoWidth = 480;
-  const [timerStarted, setTimerStarted] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
+const [eyeLookOutLeftScore, setEyeLookOutLeftScore] = useState(0);
+const [eyeLookInRightScore, setEyeLookInRightScore] = useState(0);
+const [mouthSmileRightScore, setMouthSmileRightScore] = useState(0);
+const [mouthSmileLeftScore, setMouthSmileLeftScore] = useState(0);
+const [spoofingDetected, setSpoofingDetected] = useState(false);
+const [screenshotTaken, setScreenshotTaken] = useState(false);
+const [abortController, setAbortController] = useState(null);
+
+
+
 
   const images = [
     { src: '/scan.png', text: 'smiling' },
     { src: '/left.png', text: 'Look left' },
     { src: '/right.png', text: 'Look right' }
   ];
+  const predictWebcam = async () => {
+    if (!webcamRef.current || !canvasRef.current || !faceLandmarker) {
+      console.warn("Webcam or canvas or faceLandmarker is not ready.");
+      return;
+    }
 
+    const video = webcamRef.current;
+    const canvasElement = canvasRef.current;
+    const canvasCtx = canvasElement.getContext("2d");
+    const drawingUtils = new DrawingUtils(canvasCtx);
+
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.warn("Video dimensions are zero, skipping frame processing.");
+      return;
+    }
+
+    const ratio = video.videoHeight / video.videoWidth;
+    video.style.width = `${videoWidth}px`;
+    video.style.height = `${videoWidth * ratio}px`;
+    canvasElement.style.width = `${videoWidth}px`;
+    canvasElement.style.height = `${videoWidth * ratio}px`;
+    canvasElement.width = video.videoWidth;
+    canvasElement.height = video.videoHeight;
+
+    let lastVideoTime = -1;
+    let results;
+
+    if (lastVideoTime !== video.currentTime) {
+      lastVideoTime = video.currentTime;
+      results = await faceLandmarker.detectForVideo(video, performance.now());
+      console.log("Landmarks detected: ", results.faceLandmarks);
+    }
+
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    if (results && results.faceLandmarks) {
+      for (const landmarks of results.faceLandmarks) {
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_TESSELATION,
+          { color: "#C0C0C070", lineWidth: 1 }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
+          { color: "#30FF30" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
+          { color: "#30FF30" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
+          { color: "#E0E0E0" }
+        );
+        drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_LIPS, {
+          color: "#E0E0E0"
+        });
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
+          { color: "#FF3030" }
+        );
+        drawingUtils.drawConnectors(
+          landmarks,
+          FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
+          { color: "#30FF30" }
+        );
+      }
+    }
+    updateCheckboxes(results.faceBlendshapes);
+    if (webcamRunning) {
+      window.requestAnimationFrame(predictWebcam);
+    }
+  };
   useEffect(() => {
     const intervalId = setInterval(() => {
       setImageIndex(prevIndex => (prevIndex + 1) % images.length);
@@ -114,6 +202,7 @@ const ScanFacePage = () => {
     }
     console.log("Webcam disabled.");
   };
+
   const handleWebcamEnable = () => {
     if (!faceLandmarker) {
       console.log("Wait! faceLandmarker not loaded yet.");
@@ -129,216 +218,64 @@ const ScanFacePage = () => {
     }
   };
 
-  const predictWebcam = async () => {
-    if (!webcamRef.current || !canvasRef.current || !faceLandmarker) {
-      console.warn("Webcam or canvas or faceLandmarker is not ready.");
-      return;
-    }
+  
 
-    const video = webcamRef.current;
-    const canvasElement = canvasRef.current;
-    const canvasCtx = canvasElement.getContext("2d");
-    const drawingUtils = new DrawingUtils(canvasCtx);
 
-    if (video.videoWidth === 0 || video.videoHeight === 0) {
-      console.warn("Video dimensions are zero, skipping frame processing.");
-      return;
-    }
 
-    const ratio = video.videoHeight / video.videoWidth;
-    video.style.width = `${videoWidth}px`;
-    video.style.height = `${videoWidth * ratio}px`;
-    canvasElement.style.width = `${videoWidth}px`;
-    canvasElement.style.height = `${videoWidth * ratio}px`;
-    canvasElement.width = video.videoWidth;
-    canvasElement.height = video.videoHeight;
 
-    let lastVideoTime = -1;
-    let results;
 
-    if (lastVideoTime !== video.currentTime) {
-      lastVideoTime = video.currentTime;
-      results = await faceLandmarker.detectForVideo(video, performance.now());
-      console.log("Landmarks detected: ", results.faceLandmarks);
-    }
+let currentStep = 0;
+let isPaused = false;
+let startTime = null;
 
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-    if (results && results.faceLandmarks) {
-      for (const landmarks of results.faceLandmarks) {
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_TESSELATION,
-          { color: "#C0C0C070", lineWidth: 1 }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE,
-          { color: "#FF3030" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW,
-          { color: "#FF3030" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_LEFT_EYE,
-          { color: "#30FF30" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW,
-          { color: "#30FF30" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_FACE_OVAL,
-          { color: "#E0E0E0" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_LIPS,
-          { color: "#E0E0E0" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS,
-          { color: "#FF3030" }
-        );
-        drawingUtils.drawConnectors(
-          landmarks,
-          FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS,
-          { color: "#30FF30" }
-        );
-      }
-    }
-    updateCheckboxes(results.faceBlendshapes);
-    if (webcamRunning) {
-      window.requestAnimationFrame(predictWebcam);
-    }
+const steps = [
+  {
+    actionName: 'Turn Left',
+    categoryNames: ['eyeLookInLeft', 'eyeLookOutRight'],
+    actionMessage: 'Please turn your eyes to the left.',
+    completed: false,
+    pauseDuration: 5000
+  },
+  {
+    actionName: 'Turn Right',
+    categoryNames: ['eyeLookInRight', 'eyeLookOutLeft'],
+    actionMessage: 'Now, turn your eyes to the right.',
+    completed: false,
+    pauseDuration: 5000
+  },
+  {
+    actionName: 'Smile',
+    categoryNames: ['mouthSmileRight', 'mouthSmileLeft'],
+    actionMessage: 'Great! Please smile.',
+    completed: false,
+    pauseDuration: 1000
+  }
+];
+
+const checkActionCompletion = (blendShapes, step) => {
+  return step.categoryNames.every(categoryName => {
+    const shape = blendShapes[0].categories.find(shape => shape.categoryName === categoryName);
+    return shape && shape.score >= 0.80;
+  });
+};
+
+let debounceTimer;
+const debounce = (func, delay) => {
+  return (...args) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => func(...args), delay);
   };
+};
+const captureScreenshot = debounce (async () => {
+  if (screenshotCaptured) {
+    console.log('Screenshot already captured. Skipping...');
+    return;
+  }
 
+  const controller = new AbortController();
+  setAbortController(controller);
 
-const [eyeLookOutLeftScore, setEyeLookOutLeftScore] = useState(0);
-const [eyeLookInRightScore, setEyeLookInRightScore] = useState(0);
-const [mouthSmileRightScore, setMouthSmileRightScore] = useState(0);
-const [mouthSmileLeftScore, setMouthSmileLeftScore] = useState(0);
-const [spoofingDetected, setSpoofingDetected] = useState(false);
-
-// const captureScreenshot = async () => {
-//   try {
-//     // Access the webcam stream
-//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-//     const videoElement = document.createElement('video');
-//     videoElement.srcObject = stream;
-//     videoElement.play();
-
-//     return new Promise((resolve, reject) => {
-//       videoElement.addEventListener('loadedmetadata', () => {
-//         const canvas = document.createElement('canvas');
-//         canvas.width = videoElement.videoWidth;
-//         canvas.height = videoElement.videoHeight;
-//         const ctx = canvas.getContext('2d');
-//         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-//         canvas.toBlob(async (blob) => {
-//           if (!blob) {
-//             reject('Failed to capture screenshot');
-//             return;
-//           }
-
-//           // Send screenshot to backend
-//           const formData = new FormData();
-//           formData.append('screenshot', blob, 'screenshot.png');
-
-//           try {
-//             const response = await fetch('http://127.0.0.1:5000/save-screenshot', {
-//               method: 'POST',
-//               body: formData,
-//             });
-
-//             if (response.ok) {
-//               console.log('Screenshot saved successfully.');
-//               resolve();
-//             } else {
-//               reject('Failed to save screenshot');
-//             }
-//           } catch (error) {
-//             reject('Error sending screenshot: ' + error.message);
-//           } finally {
-//             videoElement.pause();
-//             stream.getVideoTracks()[0].stop();
-//             videoElement.remove();
-//           }
-//         }, 'image/png');
-//       });
-//     });
-//   } catch (error) {
-//     console.error('Error accessing webcam:', error);
-//     throw error;
-//   }
-// };
-
-
-// const captureScreenshot = async () => {
-//   try {
-//     // Access the webcam stream
-//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-//     const videoElement = document.createElement('video');
-//     videoElement.srcObject = stream;
-//     videoElement.play();
-
-//     return new Promise((resolve, reject) => {
-//       videoElement.addEventListener('loadedmetadata', () => {
-//         const canvas = document.createElement('canvas');
-//         canvas.width = videoElement.videoWidth;
-//         canvas.height = videoElement.videoHeight;
-//         const ctx = canvas.getContext('2d');
-//         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-//         canvas.toBlob(async (blob) => {
-//           if (!blob) {
-//             reject('Failed to capture screenshot');
-//             return;
-//           }
-
-//           // Send screenshot to backend
-//           const formData = new FormData();
-//           formData.append('screenshot', blob, 'screenshot.png');
-
-//           try {
-//             const response = await fetch('http://127.0.0.1:5000/save-screenshot', {
-//               method: 'POST',
-//               body: formData,
-//             });
-
-//             if (response.ok) {
-//               console.log('Screenshot saved successfully.');
-//               setScreenshotCaptured(true);
-//               resolve();
-//             } else {
-//               reject('Failed to save screenshot');
-//             }
-//           } catch (error) {
-//             reject('Error sending screenshot: ' + error.message);
-//           } finally {
-//             videoElement.pause();
-//             stream.getVideoTracks()[0].stop();
-//             videoElement.remove();
-//           }
-//         }, 'image/png');
-//       });
-//     });
-//   } catch (error) {
-//     console.error('Error accessing webcam:', error);
-//     throw error;
-//   }
-// };
-
-
-const captureScreenshot = async () => {
   try {
-    // Access the webcam stream
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
     const videoElement = document.createElement('video');
     videoElement.srcObject = stream;
@@ -352,91 +289,170 @@ const captureScreenshot = async () => {
         const ctx = canvas.getContext('2d');
         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
+        stream.getVideoTracks()[0].stop();
         canvas.toBlob(async (blob) => {
           if (!blob) {
             reject('Failed to capture screenshot');
             return;
           }
-
-          // Get username from localStorage or any other source
           const username = localStorage.getItem('username');
           if (!username) {
             reject('No username found');
             return;
           }
-
-          // Send screenshot to backend
           const formData = new FormData();
-          formData.append('file', blob, 'screenshot.png');
+          formData.append('file', blob, 'screenshot.jpg');
 
           try {
             const response = await fetch(`http://127.0.0.1:5000/upload-screenshot/${username}`, {
               method: 'POST',
               body: formData,
               headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}` // Include token in headers
-              }
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              },
+              signal: controller.signal // Pass the abort signal
             });
 
             if (response.ok) {
               console.log('Screenshot saved successfully.');
               setScreenshotCaptured(true);
+              disableWebcam();
               resolve();
             } else {
               reject('Failed to save screenshot');
             }
           } catch (error) {
-            reject('Error sending screenshot: ' + error.message);
+            if (error.name === 'AbortError') {
+              console.log('Screenshot capture aborted.');
+            } else {
+              reject('Error sending screenshot: ' + error.message);
+            }
           } finally {
             videoElement.pause();
             stream.getVideoTracks()[0].stop();
             videoElement.remove();
           }
-        }, 'image/png');
+        }, 'image/jpg');
       });
     });
   } catch (error) {
     console.error('Error accessing webcam:', error);
     throw error;
   }
-};
+},2000)
 
+const checkScreenshotStatus = async (username) => {
+  const controller = new AbortController();
+  setAbortController(controller);
 
-let currentStep = 0;
-let isPaused = false;
-let startTime = null;
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/check-screenshot/${username}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      signal: controller.signal // Pass the abort signal
+    });
 
-const steps = [
-  {
-    actionName: 'Turn Left',
-    categoryNames: ['eyeLookInLeft', 'eyeLookOutRight'],
-    actionMessage: 'Please turn your eyes to the left.',
-    completed: false,
-    pauseDuration: 3000
-  },
-  {
-    actionName: 'Turn Right',
-    categoryNames: ['eyeLookInRight', 'eyeLookOutLeft'],
-    actionMessage: 'Now, turn your eyes to the right.',
-    completed: false,
-    pauseDuration: 3000
-  },
-  {
-    actionName: 'Smile',
-    categoryNames: ['mouthSmileRight', 'mouthSmileLeft'],
-    actionMessage: 'Great! Please smile.',
-    completed: false,
-    pauseDuration: 2000
+    if (response.ok) {
+      const result = await response.json();
+      return result.saved;
+    } else {
+      throw new Error('Failed to check screenshot status');
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Screenshot status check aborted.');
+    } else {
+      console.error('Error checking screenshot status:', error);
+    }
+    return false;
   }
-];
-
-const checkActionCompletion = (blendShapes, step) => {
-  return step.categoryNames.every(categoryName => {
-    const shape = blendShapes[0].categories.find(shape => shape.categoryName === categoryName);
-    return shape && shape.score >= 0.80;
-  });
 };
 
+// const captureScreenshot = async () => {
+//   if (screenshotCaptured) {
+//     console.log('Screenshot already captured. Skipping...');
+//     return;
+//   }  
+//   try {
+//     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+//     const videoElement = document.createElement('video');
+//     videoElement.srcObject = stream;
+//     videoElement.play();
+
+//     return new Promise((resolve, reject) => {
+//       videoElement.addEventListener('loadedmetadata', () => {
+//         const canvas = document.createElement('canvas');
+//         canvas.width = videoElement.videoWidth;
+//         canvas.height = videoElement.videoHeight;
+//         const ctx = canvas.getContext('2d');
+//         ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+//         stream.getVideoTracks()[0].stop();
+//         canvas.toBlob(async (blob) => {
+//           if (!blob) {
+//             reject('Failed to capture screenshot');
+//             return;
+//           }
+//           const username = localStorage.getItem('username');
+//           if (!username) {
+//             reject('No username found');
+//             return;
+//           }
+//           const formData = new FormData();
+//           formData.append('file', blob, 'screenshot.jpg');
+
+//           try {
+//             const response = await fetch(`http://127.0.0.1:5000/upload-screenshot/${username}`, {
+//               method: 'POST',
+//               body: formData,
+//               headers: {
+//                 'Authorization': `Bearer ${localStorage.getItem('token')}` // Include token in headers
+//               }
+//             });
+
+//             if (response.ok) {
+//               console.log('Screenshot saved successfully.');
+//               setScreenshotCaptured(true); // Mark screenshot as captured
+//               disableWebcam(); // Disable webcam after successful capture
+//               resolve();
+//             } else {
+//               reject('Failed to save screenshot');
+//             }
+//           } catch (error) {
+//             reject('Error sending screenshot: ' + error.message);
+//           } finally {
+//             videoElement.pause();
+//             stream.getVideoTracks()[0].stop();
+//             videoElement.remove();
+//           }
+//         }, 'image/jpg');
+//       });
+//     });
+//   } catch (error) {
+//     console.error('Error accessing webcam:', error);
+//     throw error;
+//   }
+// };
+// const checkScreenshotStatus = async (username) => {
+//   try {
+//     const response = await fetch(`http://127.0.0.1:5000/check-screenshot/${username}`, {
+//       headers: {
+//         'Authorization': `Bearer ${localStorage.getItem('token')}`
+//       }
+//     });
+
+//     if (response.ok) {
+//       const result = await response.json();
+//       return result.saved;
+//     } else {
+//       throw new Error('Failed to check screenshot status');
+//     }
+//   } catch (error) {
+//     console.error('Error checking screenshot status:', error);
+//     return false;
+//   }
+// };
 const updateCheckboxes = async (blendShapes) => {
   if (!blendShapes || !blendShapes[0] || !blendShapes[0].categories) {
     console.log("No blend shapes data available.");
@@ -495,11 +511,17 @@ const updateCheckboxes = async (blendShapes) => {
       setMouthSmileRightScore(scores.mouthSmileRight);
       setMouthSmileLeftScore(scores.mouthSmileLeft);
       console.log("Smile completed.");
-      if (!screenshotTaken)  {
+
+      if (!screenshotTaken) {
         try {
           await captureScreenshot();
-          console.log('Screenshot captured and webcam turned off.');
-          setScreenshotTaken(true);
+          console.log('Screenshot captured.');
+          const username = localStorage.getItem('username');
+          if (await checkScreenshotStatus(username)) {
+            console.log('Screenshot saved confirmed. Stopping webcam.');
+          } else {
+            console.log('Screenshot not confirmed saved. Retry capturing.');
+          }
         } catch (error) {
           console.error('Error capturing screenshot:', error);
         }
@@ -510,19 +532,77 @@ const updateCheckboxes = async (blendShapes) => {
   }
 };
 
+const handleContinue = () => {
+  // Abort ongoing requests
+  if (abortController) {
+    abortController.abort();
+  }
+  // Stop webcam
+  disableWebcam();
+  // Navigate to the next page
+  window.location.href = '/selfie';
+};
+
+
 const stopWebcamAndLogic = (message) => {
   console.log(message);
   disableWebcam();
 };
 
 
-  
+useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login'); // Redirect to login if not authenticated
+        return;
+      }
+
+      const response = await axios.get('http://localhost:5000/dashboard', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserData(response.data.user_data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      navigate('/login'); // Redirect to login if there's an error
+    }
+  };
+
+  fetchUserData();
+}, [navigate]);
+
+const handleLogout = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post('http://localhost:5000/logout', {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    // Clear localStorage on logout
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+
+    // Redirect to login
+    navigate('/login');
+  } catch (error) {
+    console.error('Error logging out:', error);
+  }
+};
   
 
 
   return (
 <Container>
 <Row>
+{userData ? (
+            <>
+              <h1>Welcome, {userData.username}!</h1>
+              <p>Email: {userData.email}</p>
+            </>
+          ) : (
+            <p>Loading user data...</p>
+          )}
   <Col md={6}>
     <div className="verification-steps">
       <h1></h1>
@@ -643,12 +723,15 @@ const stopWebcamAndLogic = (message) => {
       {screenshotCaptured && (
         <div className="button-container">
           <Link to="/selfie">
-            <button className="continue-button">CONTINUE</button>
+          <button className="continue-button" onClick={handleContinue}>
+        CONTINUE
+      </button>
           </Link>
         </div>
       )}
     </div>
   </Col>
+  <Button variant="danger" onClick={handleLogout} style={{ marginTop: '20px' }}>Logout</Button>
 </Row>
 </Container>
   );

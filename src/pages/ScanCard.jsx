@@ -12,6 +12,9 @@ const ScanCard = () => {
   const [inputStyle, setInputStyle] = useState({});
   const [inputText, setInputText] = useState('');
   const [inputIcon, setInputIcon] = useState('/progre.png');
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -53,13 +56,17 @@ const ScanCard = () => {
       canvas.toBlob((blob) => {
         sendImage(blob);
       }, 'image/jpeg');
+
+      // Turn off the webcam after capturing the image
+      stopWebcam();
+      setIsWebcamActive(false); // Ensure the webcam is turned off
     }
   };
+
   const sendImage = async (blob) => {
     const formData = new FormData();
     formData.append('file', blob, 'card.jpg'); // The form field name should match the one in Flask
 
-    // Get the username and token from localStorage or any other source
     const username = localStorage.getItem('username');
     const token = localStorage.getItem('token');
     
@@ -84,19 +91,17 @@ const ScanCard = () => {
 
         if (response.ok) {
             console.log('Image uploaded successfully');
-            // Call verifyImageQuality after successful upload
-            verifyImageQuality();
         } else {
             console.error('Image upload failed');
         }
     } catch (error) {
         console.error('Error uploading image:', error);
     }
-};
+  };
 
   const verifyImageQuality = async () => {
-    const username = localStorage.getItem('username'); // Retrieve the username from localStorage
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
 
     if (!username || !token) {
       console.error('Username or token not found in localStorage');
@@ -107,7 +112,7 @@ const ScanCard = () => {
       const response = await fetch(`http://localhost:5000/check_faces_in_image/${username}/card.jpg`, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`, // Include token in the headers
+          'Authorization': `Bearer ${token}`,
         },
       });
 
@@ -148,10 +153,17 @@ const ScanCard = () => {
 
       const result = await response.json();
       setVerificationMessage(result.match_status);
+      setResult(result); // Store the result in state
       console.log(result);
     } catch (error) {
       console.error('Error verifying card faces:', error);
+      setError('Error verifying card faces'); // Store the error in state
     }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await verifyCardFaces();
   };
 
   return (
@@ -221,20 +233,35 @@ const ScanCard = () => {
             >
               Take Picture
             </button>
-              <button
-                onClick={verifyImageQuality}
-                className="continue-button btn btn-secondary mt-3"
-              >
-                Verify Image Quality
-              </button>
-            <div className="button-container mt-2">
             <button
-                onClick={verifyCardFaces}
-                className="continue-button btn btn-secondary"
+              onClick={verifyImageQuality}
+              className="continue-button btn btn-secondary mt-3"
+            >
+              Verify Image Quality
+            </button>
+            <div className="button-container mt-2">
+              <button
+                type="submit"
+                className="continue-button btn btn-success mt-3"
+                onClick={handleSubmit}
               >
-                Verification
+                Verify Card Faces
               </button>
             </div>
+            {error && <div className="alert alert-danger mt-3">{error}</div>}
+            {result && (
+              <div className="result-message mt-3">
+                {result.similarity_score > 0.20 ? (
+                  <div>
+                    <Link to="/dataverficationcompleted">Good</Link>
+                  </div>
+                ) : (
+                  <div>
+                    you are spoffing
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,10 +1,9 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import { Container } from 'react-bootstrap';
 import '../components/Dataverification/ScanFacePage.css'; 
 import head_rightImg from '../assets/head_rightImg.png';
-import logo from '../assets/logo.png'; // Import the CSS file
 import { Link } from 'react-router-dom';
 
 function TakeSelfie() {
@@ -14,7 +13,44 @@ function TakeSelfie() {
     const webcamRef = useRef(null);
     const navigate = useNavigate();
 
+    const uploadSelfieImage = async (file) => {
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('token');
+    
+        if (!username || !token) {
+            console.error('Username or token not found in localStorage');
+            return;
+        }
+    
+        const formData = new FormData();
+        formData.append('file', file);
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/upload-selfie/${username}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include token in the headers
+                },
+                body: formData,
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to upload selfie');
+            }
+    
+            const data = await response.json();
+            console.log(data.message);
+        } catch (error) {
+            console.error('Error uploading selfie:', error);
+        }
+    };
+
+    let isUploading = false;
+
     const captureIdImage = () => {
+        if (isUploading) return;
+        isUploading = true;
+
         const imageSrc = webcamRef.current.getScreenshot();
         if (imageSrc) {
             const byteString = atob(imageSrc.split(',')[1]);
@@ -23,85 +59,48 @@ function TakeSelfie() {
             for (let i = 0; i < byteString.length; i++) {
                 ia[i] = byteString.charCodeAt(i);
             }
-            const blob = new Blob([ab], { type: 'image/jpeg' });
-            const file = new File([blob], "id_image.jpg", { type: "image/jpeg" });
-            uploadSelfieImage(file);
+            const blob = new Blob([ab], { type: 'image/jpg' });
+            const file = new File([blob], "selfie.jpg", { type: "image/jpg" });
+            uploadSelfieImage(file).finally(() => isUploading = false);
             setShowIdWebcam(false); // Close webcam after capture
         }
     };
 
-    const uploadSelfieImage = async (file) => {
-      const username = localStorage.getItem('username');
-      const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-  
-      if (!username) {
-          console.error('Username not found in localStorage');
-          return;
-      }
-  
-      if (!token) {
-          console.error('Token not found in localStorage');
-          return;
-      }
-  
-      const formData = new FormData();
-      formData.append('file', file);
-  
-      try {
-          const response = await fetch(`http://127.0.0.1:5000/upload-selfie/${username}`, {
-              method: 'POST',
-              headers: {
-                  'Authorization': `Bearer ${token}`, // Include token in the headers
-              },
-              body: formData,
-          });
-  
-          if (!response.ok) {
-              throw new Error('Failed to upload selfie');
-          }
-  
-          const data = await response.json();
-          console.log(data.message);
-      } catch (error) {
-          console.error('Error uploading selfie:', error);
-      }
-  };
-  
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
-        // Retrieve the username from local storage
-        const username = localStorage.getItem('username'); // Ensure you have stored username in local storage
-        const token = localStorage.getItem('token'); // JWT token for authentication
-    
+
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('token');
+
         if (!username) {
             console.error('Username is not found in local storage');
             return;
         }
-    
+
         if (!token) {
             console.error('User is not authenticated');
             return;
         }
-    
-        // Only include the username and token in the request
+
         try {
             const response = await fetch(`http://127.0.0.1:5000/match_faces/${username}`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Include token in the headers
-                    'Content-Type': 'application/json', // Assuming no file upload is needed
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
-    
+
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`Network response was not ok: ${response.statusText}`);
             }
-    
+
             const data = await response.json();
+            console.log('Response data:', data); // Log the response to check what is received
             setResult(data); // Handle result data
             setError(null);
         } catch (error) {
+            console.error('Fetch error:', error.message); // Log any errors
             setError(error.message); // Handle error
             navigate('/error'); // Redirect to error page
         }
@@ -112,10 +111,8 @@ function TakeSelfie() {
             <div className="verification-container">
                 <div className="header">
                     <div className="header-content">
-                        {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
                         <div className="text-content">
                             <h1>DEVOSPACE</h1>
-                            {/* <img src={logo} alt="Devospace Logo" className="logo" /> */}
                             <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
                         </div>
                     </div>
@@ -158,7 +155,7 @@ function TakeSelfie() {
                         ) : (
                             <div>
                                 <Link to="/scan">
-                                    <p className="error-message">We can't ensure that you are the live person.</p>
+                                    <p className="error-message">We cant ensure that you are the live person.</p>
                                     <button className="holdback-button">Hold Back</button>
                                 </Link>
                             </div>

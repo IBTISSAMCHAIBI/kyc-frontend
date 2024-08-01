@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import subscribe from '../assets/subscribe.png';
 import { Link, useNavigate } from 'react-router-dom';
@@ -98,7 +98,7 @@ const Login = () => {
                 Login
               </Button>
               <p className="signup-link">
-                Don't have an account? <Link to="/SignUp">Sign Up</Link>
+                Dont have an account? <Link to="/SignUp">Sign Up</Link>
               </p>
               {message && <p className={success ? 'text-success' : 'text-danger'}>{message}</p>}
             </Form>

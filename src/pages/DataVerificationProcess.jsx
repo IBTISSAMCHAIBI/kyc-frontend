@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import '../components/Dataverification/DataVerification.css';
 import { Link, useNavigate } from 'react-router-dom';
 import head_rightImg from '../assets/head_rightImg.png';
-import logo from '../assets/logo.png';
 import axios from 'axios';
 
 const DataVerificationProcess = () => {
