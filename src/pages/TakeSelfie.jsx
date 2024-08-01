@@ -10,6 +10,7 @@ function TakeSelfie() {
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
     const [showIdWebcam, setShowIdWebcam] = useState(false);
+    const [selfieImageUrl, setSelfieImageUrl] = useState(null);
     const webcamRef = useRef(null);
     const navigate = useNavigate();
 
@@ -106,6 +107,35 @@ function TakeSelfie() {
         }
     };
 
+    const fetchSelfieImage = async () => {
+        const username = localStorage.getItem('username');
+        const token = localStorage.getItem('token');
+    
+        if (!username || !token) {
+            console.error('Username or token not found in localStorage');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://127.0.0.1:5000/get-selfie/${username}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include token in the headers
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to fetch selfie image');
+            }
+    
+            const imageBlob = await response.blob();
+            const imageUrl = URL.createObjectURL(imageBlob);
+            setSelfieImageUrl(imageUrl);
+        } catch (error) {
+            console.error('Error fetching selfie image:', error);
+        }
+    };
+
     return (
         <Container fluid>
             <div className="verification-container">
@@ -142,6 +172,10 @@ function TakeSelfie() {
                         <button type="submit" className="submit-button">Start verification</button>
                     </form>
                 </div>
+                <div className="capture-container">
+                    <button type="button" onClick={fetchSelfieImage} className="capture-button">Display Captured Selfie</button>
+                    {selfieImageUrl && <img src={selfieImageUrl} alt="Captured Selfie" className="captured-selfie" />}
+                </div>
                 {error && <div className="error-message">{error}</div>}
                 {result && (
                     <div className="result-container">
@@ -155,7 +189,7 @@ function TakeSelfie() {
                         ) : (
                             <div>
                                 <Link to="/scan">
-                                    <p className="error-message">We cant ensure that you are the live person.</p>
+                                    <p className="error-message">We can't ensure that you are the live person.</p>
                                     <button className="holdback-button">Hold Back</button>
                                 </Link>
                             </div>

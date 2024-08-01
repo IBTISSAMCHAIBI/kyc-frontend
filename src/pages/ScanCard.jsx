@@ -166,6 +166,36 @@ const ScanCard = () => {
     await verifyCardFaces();
   };
 
+  const fetchCardImage = async () => {
+    const username = localStorage.getItem('username');
+    const token = localStorage.getItem('token');
+
+    if (!username || !token) {
+      console.error('Username or token not found in localStorage');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/get-card/${username}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        setCapturedImage(url);
+        setIsImageDisplayed(true);
+      } else {
+        console.error('Failed to fetch card image');
+      }
+    } catch (error) {
+      console.error('Error fetching card image:', error);
+    }
+  };
+
   return (
     <Container fluid>
       <div className="header">
@@ -248,16 +278,22 @@ const ScanCard = () => {
                 Verify Card Faces
               </button>
             </div>
+            <button
+              onClick={fetchCardImage}
+              className="continue-button btn btn-info mt-3"
+            >
+              Display Card Image
+            </button>
             {error && <div className="alert alert-danger mt-3">{error}</div>}
             {result && (
               <div className="result-message mt-3">
                 {result.similarity_score > 0.20 ? (
                   <div>
-                    <Link to="/dataverficationcompleted">Good</Link>
+                    you are real 
                   </div>
                 ) : (
                   <div>
-                    you are spoffing
+                    you are not the right person
                   </div>
                 )}
               </div>
