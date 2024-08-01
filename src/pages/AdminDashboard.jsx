@@ -1,4 +1,4 @@
-import { useState ,useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,8 @@ const AdminDashboard = () => {
   const [newClientCompany, setNewClientCompany] = useState('');
   const [newClientEmail, setNewClientEmail] = useState('');
   const [clientError, setClientError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null); // Added state for success message
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [clients, setClients] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -55,10 +56,27 @@ const AdminDashboard = () => {
       setNewClientCompany('');
       setNewClientEmail('');
       setClientError(null);
+      fetchClients(); // Fetch clients after adding a new one
     } catch (error) {
       setClientError('An error occurred while adding the client.');
     }
   };
+
+  const fetchClients = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:5000/clients', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setClients(response.data.clients);
+    } catch (err) {
+      setClientError('An error occurred while fetching clients.');
+    }
+  };
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -141,6 +159,22 @@ const AdminDashboard = () => {
           </Card>
         </Col>
       </Row>
+      {clients.length > 0 && (
+        <Row className="mt-4">
+          <Col>
+            <Card>
+              <Card.Header>Client List</Card.Header>
+              <Card.Body>
+                <ul>
+                  {clients.map(client => (
+                    <li key={client.company}>{client.company} - {client.email}</li>
+                  ))}
+                </ul>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      )}
     </Container>
   );
 };
