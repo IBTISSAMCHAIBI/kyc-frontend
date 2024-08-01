@@ -8,7 +8,7 @@ import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import { app } from '../firebase';
 
 const Login = () => {
-  const [username, setUsername] = useState(''); // Changed from firstName to username
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(false);
@@ -21,12 +21,12 @@ const Login = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      const token = await user.getIdToken(); // Get Firebase ID token
+      const token = await user.getIdToken();
 
-      // Optionally, you can send this token to your backend
       const response = await axios.post('http://localhost:5000/google-login', { token });
 
-      localStorage.setItem('token', response.data.token);  // Store the JWT token
+      localStorage.setItem('token', response.data.token);  
+      localStorage.setItem('role', response.data.role);  // Store user role
       setMessage('Successfully authenticated with Google!');
       setSuccess(true);
       navigate('/process');  // Redirect to the dashboard
@@ -36,32 +36,29 @@ const Login = () => {
       setSuccess(false);
     }
   };
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Make the API call to login
       const response = await axios.post('http://localhost:5000/login', { username, password });
-  
-      // Store the token and username in localStorage
+
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('username', username);  // Store username
-  
-      // Optionally, store any other user data if returned from the server
-      // localStorage.setItem('userData', JSON.stringify(response.data.userData));
-  
+      localStorage.setItem('role', response.data.role);  // Store user role
       setMessage('Successfully logged in!');
       setSuccess(true);
-  
-      // Redirect to the dashboard
-      navigate('/process');
+
+      // Redirect based on user role
+      const role = response.data.role;
+      if (role === 'admin') {
+        navigate('/admin-dashboard');  // Redirect to admin dashboard
+      } else {
+        navigate('/process');  // Redirect to user dashboard
+      }
     } catch (error) {
-      // Handle errors
       setMessage(error.response?.data?.error || 'An error occurred');
       setSuccess(false);
     }
   };
-  
 
   return (
     <Container fluid className="login-container">
@@ -98,7 +95,7 @@ const Login = () => {
                 Login
               </Button>
               <p className="signup-link">
-                Dont have an account? <Link to="/SignUp">Sign Up</Link>
+                Don't have an account? <Link to="/SignUp">Sign Up</Link>
               </p>
               {message && <p className={success ? 'text-success' : 'text-danger'}>{message}</p>}
             </Form>

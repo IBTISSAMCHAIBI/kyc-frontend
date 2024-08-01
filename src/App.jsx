@@ -11,7 +11,8 @@ import VerificationCompleted from './pages/VerificationCompleted';
 import TakeSelfie from './pages/TakeSelfie';
 import Dashboard from './pages/Dashboard';
 import Ending from './pages/Ending';
-import ProtectedRoute from './pages/ProtectedRoute'; // Import ProtectedRoute
+import ProtectedRoute from './pages/ProtectedRoute'; // Import <ProtectedRoute></ProtectedRoute
+import AdminDashboard from './pages/AdminDashboard';
 
 const App = () => {
   return (
@@ -27,6 +28,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+           <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
