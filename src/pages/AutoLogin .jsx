@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AutoLogin = () => {
+    const [message, setMessage] = useState('Logging you in...');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,8 +39,16 @@ const AutoLogin = () => {
             .then(response => response.json())
             .then(data => {
                 console.log('Response data:', data);
-                // Redirect after successful login
-                navigate('/process');
+                if (data.status === 'success') {
+                    // Redirect after successful login
+                    navigate('/process');
+                } else if (data.message === 'Token has already been used' || data.message === 'Token has expired') {
+                    // Display link expired message
+                    setMessage('Link expired');
+                } else {
+                    // Redirect to login on other errors
+                    navigate('/login');
+                }
             })
             .catch(error => {
                 console.error('Error during auto-login:', error);
@@ -52,7 +61,7 @@ const AutoLogin = () => {
         }
     }, [navigate]);
 
-    return <div>Logging you in...</div>;
+    return <div>{message}</div>;
 };
 
 export default AutoLogin;
