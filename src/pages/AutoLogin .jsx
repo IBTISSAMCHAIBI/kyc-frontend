@@ -44,7 +44,7 @@ const AutoLogin = () => {
                     navigate('/process');
                 } else if (data.message === 'Token has already been used' || data.message === 'Token has expired') {
                     // Display link expired message
-                    setMessage('Link expired');
+                    navigate('/Linkexpired');
                 } else {
                     // Redirect to login on other errors
                     navigate('/login');

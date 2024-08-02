@@ -15,6 +15,7 @@ import ProtectedRoute from './pages/ProtectedRoute'; // Import <ProtectedRoute><
 import AdminDashboard from './pages/AdminDashboard';
 import AutoLogin from './pages/AutoLogin ';
 import ErrorPage from './pages/Errorpage';
+import Linkexpired from './pages/Linkexpired';
 const App = () => {
   return (
     <Router>
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route path="/auto-login" element={<AutoLogin />} />
+        <Route path="/Linkexpired" element={<Linkexpired />} />
         
         {/* Protected Routes */}
         <Route

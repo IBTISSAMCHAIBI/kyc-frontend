@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminDashboard = () => {
   const [message, setMessage] = useState('');
@@ -15,7 +17,6 @@ const AdminDashboard = () => {
   const [clients, setClients] = useState([]);
   const [emailSendingStatus, setEmailSendingStatus] = useState(null);
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
@@ -23,24 +24,24 @@ const AdminDashboard = () => {
         const response = await axios.get('http://localhost:5000/admin_dashboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
-
+  
         setMessage(response.data.message);
         setUsername(response.data.username); // Correctly set the username
       } catch (err) {
         if (err.response && err.response.status === 403) {
-          setError('Access denied. You do not have permission to view this page.');
+          toast.error('Access denied. You do not have permission to view this page.'); // Error notification
           navigate('/login'); // Redirect to login if access is denied
         } else {
-          setError('An error occurred while fetching dashboard data.');
+          toast.error('An error occurred while fetching dashboard data.'); // Error notification
         }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchDashboardData();
   }, [navigate]);
-
+  
   const handleAddClient = async (event) => {
     event.preventDefault();
 
@@ -52,13 +53,14 @@ const AdminDashboard = () => {
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      setSuccessMessage(response.data.success); // Display success message
+      toast.success('Client added successfully');
+      setSuccessMessage(response.data.success);
       setNewClientCompany('');
       setNewClientEmail('');
       setClientError(null);
       fetchClients(); // Fetch clients after adding a new one
     } catch (error) {
+      toast.error('An error occurred while adding the client.');
       setClientError('An error occurred while adding the client.');
     }
   };
@@ -70,7 +72,9 @@ const AdminDashboard = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClients(response.data.clients);
+      toast.success('Clients fetched successfully');
     } catch (err) {
+      toast.error('An error occurred while fetching clients.'); 
       setClientError('An error occurred while fetching clients.');
     }
   };
@@ -92,7 +96,9 @@ const AdminDashboard = () => {
 
       // Redirect to login
       navigate('/login');
+      toast.success('Logged out successfully');
     } catch (error) {
+      toast.error('Error logging out'); 
       console.error('Error logging out:', error);
     }
   };
@@ -103,15 +109,17 @@ const AdminDashboard = () => {
       const response = await axios.post('http://localhost:5000/send-client-emails', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
+      toast.success('Emails sent successfully');
       setEmailSendingStatus(response.data.success); // Display status message
     } catch (error) {
+      toast.error('An error occurred while sending emails.');
       setEmailSendingStatus('An error occurred while sending emails.');
     }
   };
 
   return (
     <Container fluid className="admin-dashboard">
+    <ToastContainer />
       <Row>
         <Col>
           <h1>Admin Dashboard</h1>
@@ -165,8 +173,8 @@ const AdminDashboard = () => {
                     required
                   />
                 </div>
-                {clientError && <Alert variant="danger">{clientError}</Alert>}
-                {successMessage && <Alert variant="success">{successMessage}</Alert>} {/* Display success message */}
+                {/* {clientError && <Alert variant="danger">{clientError}</Alert>}
+                {successMessage && <Alert variant="success">{successMessage}</Alert>}  */}
                 <Button type="submit" variant="primary">Add Client</Button>
               </form>
             </Card.Body>
@@ -195,7 +203,7 @@ const AdminDashboard = () => {
             <Card.Header>Send Emails to All Clients</Card.Header>
             <Card.Body>
               <Button variant="primary" onClick={handleSendEmails}>Send Emails</Button>
-              {emailSendingStatus && <Alert variant="info" className="mt-3">{emailSendingStatus}</Alert>}
+              {/* {emailSendingStatus && <Alert variant="info" className="mt-3">{emailSendingStatus}</Alert>} */}
             </Card.Body>
           </Card>
         </Col>
