@@ -5,23 +5,26 @@ import '../components/Dataverification/ScanFacePage.css';
 import { Link  ,useNavigate} from 'react-router-dom';
 import axios from 'axios';
 const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
+import head_rightImg from '../assets/head_rightImg.png';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const ScanFacePage = () => {
 
-  const [eyeLookOutLeftCompleted, setEyeLookOutLeftCompleted] = useState(false);
-  const [screenshotCaptured, setScreenshotCaptured] = useState(false);
-  const [eyeLookInRightCompleted, setEyeLookInRightCompleted] = useState(false);
-  const [smileCompleted, setSmileCompleted] = useState(false);
-  const [webcamEnabled, setWebcamEnabled] = useState(false);
-  const [imageIndex, setImageIndex] = useState(0);
-  const [faceLandmarker, setFaceLandmarker] = useState(null);
-  const [runningMode, setRunningMode] = useState("IMAGE");
-  const [webcamRunning, setWebcamRunning] = useState(false);;
-  const [enableWebcamButton, setEnableWebcamButton] = useState(false);
-  const webcamRef = useRef(null);
-  const canvasRef = useRef(null);
-  const videoWidth = 480;
-  const [userData, setUserData] = useState(null);
-  const navigate = useNavigate();
+const [eyeLookOutLeftCompleted, setEyeLookOutLeftCompleted] = useState(false);
+const [screenshotCaptured, setScreenshotCaptured] = useState(false);
+const [eyeLookInRightCompleted, setEyeLookInRightCompleted] = useState(false);
+const [smileCompleted, setSmileCompleted] = useState(false);
+const [webcamEnabled, setWebcamEnabled] = useState(false);
+const [imageIndex, setImageIndex] = useState(0);
+const [faceLandmarker, setFaceLandmarker] = useState(null);
+const [runningMode, setRunningMode] = useState("IMAGE");
+const [webcamRunning, setWebcamRunning] = useState(false);;
+const [enableWebcamButton, setEnableWebcamButton] = useState(false);
+const webcamRef = useRef(null);
+const canvasRef = useRef(null);
+const videoWidth = 480;
+const [userData, setUserData] = useState(null);
+const navigate = useNavigate();
 const [eyeLookOutLeftScore, setEyeLookOutLeftScore] = useState(0);
 const [eyeLookInRightScore, setEyeLookInRightScore] = useState(0);
 const [mouthSmileRightScore, setMouthSmileRightScore] = useState(0);
@@ -30,14 +33,38 @@ const [spoofingDetected, setSpoofingDetected] = useState(false);
 const [screenshotTaken, setScreenshotTaken] = useState(false);
 const [abortController, setAbortController] = useState(null);
 
-
-
-
-  const images = [
+let currentStep = 0;
+let isPaused = false;
+let startTime = null;
+const steps = [
+  {
+    actionName: 'Turn Left',
+    categoryNames: ['eyeLookInLeft', 'eyeLookOutRight'],
+    actionMessage: 'Please turn your eyes to the left.',
+    completed: false,
+    pauseDuration: 4000
+  },
+  {
+    actionName: 'Turn Right',
+    categoryNames: ['eyeLookInRight', 'eyeLookOutLeft'],
+    actionMessage: 'Now, turn your eyes to the right.',
+    completed: false,
+    pauseDuration: 4000
+  },
+  {
+    actionName: 'Smile',
+    categoryNames: ['mouthSmileRight', 'mouthSmileLeft'],
+    actionMessage: 'Great! Please smile.',
+    completed: false,
+    pauseDuration: 2000
+  }
+];
+const images = [
     { src: '/scan.png', text: 'smiling' },
     { src: '/left.png', text: 'Look left' },
     { src: '/right.png', text: 'Look right' }
-  ];
+];
+
   const predictWebcam = async () => {
     if (!webcamRef.current || !canvasRef.current || !faceLandmarker) {
       console.warn("Webcam or canvas or faceLandmarker is not ready.");
@@ -181,7 +208,7 @@ const [abortController, setAbortController] = useState(null);
 };
 
 
-  const clearCanvas = () => {
+const clearCanvas = () => {
     const canvasElement = canvasRef.current;
     if (canvasElement) {
       const ctx = canvasElement.getContext('2d');
@@ -191,7 +218,7 @@ const [abortController, setAbortController] = useState(null);
     }
   };
 
-  const disableWebcam = () => {
+const disableWebcam = () => {
     setWebcamRunning(false);
     if (webcamRef.current && webcamRef.current.srcObject) {
       webcamRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -203,7 +230,7 @@ const [abortController, setAbortController] = useState(null);
     console.log("Webcam disabled.");
   };
 
-  const handleWebcamEnable = () => {
+const handleWebcamEnable = () => {
     if (!faceLandmarker) {
       console.log("Wait! faceLandmarker not loaded yet.");
       return;
@@ -220,38 +247,6 @@ const [abortController, setAbortController] = useState(null);
 
   
 
-
-
-
-
-let currentStep = 0;
-let isPaused = false;
-let startTime = null;
-
-const steps = [
-  {
-    actionName: 'Turn Left',
-    categoryNames: ['eyeLookInLeft', 'eyeLookOutRight'],
-    actionMessage: 'Please turn your eyes to the left.',
-    completed: false,
-    pauseDuration: 5000
-  },
-  {
-    actionName: 'Turn Right',
-    categoryNames: ['eyeLookInRight', 'eyeLookOutLeft'],
-    actionMessage: 'Now, turn your eyes to the right.',
-    completed: false,
-    pauseDuration: 5000
-  },
-  {
-    actionName: 'Smile',
-    categoryNames: ['mouthSmileRight', 'mouthSmileLeft'],
-    actionMessage: 'Great! Please smile.',
-    completed: false,
-    pauseDuration: 1000
-  }
-];
-
 const checkActionCompletion = (blendShapes, step) => {
   return step.categoryNames.every(categoryName => {
     const shape = blendShapes[0].categories.find(shape => shape.categoryName === categoryName);
@@ -259,21 +254,45 @@ const checkActionCompletion = (blendShapes, step) => {
   });
 };
 
-let debounceTimer;
-const debounce = (func, delay) => {
-  return (...args) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => func(...args), delay);
-  };
+const checkScreenshotStatus = async (username) => {
+  const controller = new AbortController();
+  setAbortController(controller);
+
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/check-screenshot/${username}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      },
+      signal: controller.signal // Pass the abort signal
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      if (result.saved) {
+        console.log('Screenshot status checked successfully!');
+      } else {
+        toast.info('Screenshot status not saved.');
+      }
+      return result.saved;
+    } else {
+      throw new Error('Failed to check screenshot status');
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      console.log('Screenshot status check aborted.');
+    } else {
+      console.error('Error checking screenshot status:', error);
+      toast.error('Error checking screenshot status.');
+    }
+    return false;
+  }
 };
-const captureScreenshot = debounce (async () => {
+
+const captureScreenshot = async () => {
   if (screenshotCaptured) {
     console.log('Screenshot already captured. Skipping...');
     return;
   }
-
-  const controller = new AbortController();
-  setAbortController(controller);
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -292,11 +311,13 @@ const captureScreenshot = debounce (async () => {
         stream.getVideoTracks()[0].stop();
         canvas.toBlob(async (blob) => {
           if (!blob) {
+            toast.error('Failed to capture screenshot');
             reject('Failed to capture screenshot');
             return;
           }
           const username = localStorage.getItem('username');
           if (!username) {
+            toast.error('No username found');
             reject('No username found');
             return;
           }
@@ -308,25 +329,23 @@ const captureScreenshot = debounce (async () => {
               method: 'POST',
               body: formData,
               headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
-              },
-              signal: controller.signal // Pass the abort signal
+                'Authorization': `Bearer ${localStorage.getItem('token')}` // Include token in headers
+              }
             });
 
             if (response.ok) {
+              toast.success('A screenshot of your face saved successfully.');
               console.log('Screenshot saved successfully.');
-              setScreenshotCaptured(true);
-              disableWebcam();
+              setScreenshotCaptured(true); // Mark screenshot as captured
+              disableWebcam(); // Disable webcam after successful capture
               resolve();
             } else {
+              toast.error('Failed to save screenshot');
               reject('Failed to save screenshot');
             }
           } catch (error) {
-            if (error.name === 'AbortError') {
-              console.log('Screenshot capture aborted.');
-            } else {
-              reject('Error sending screenshot: ' + error.message);
-            }
+            toast.error('Error sending screenshot: ' + error.message);
+            reject('Error sending screenshot: ' + error.message);
           } finally {
             videoElement.pause();
             stream.getVideoTracks()[0].stop();
@@ -336,38 +355,12 @@ const captureScreenshot = debounce (async () => {
       });
     });
   } catch (error) {
+    toast.error('Error accessing webcam: ' + error.message);
     console.error('Error accessing webcam:', error);
     throw error;
   }
-},2000)
-
-const checkScreenshotStatus = async (username) => {
-  const controller = new AbortController();
-  setAbortController(controller);
-
-  try {
-    const response = await fetch(`http://127.0.0.1:5000/check-screenshot/${username}`, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      signal: controller.signal // Pass the abort signal
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      return result.saved;
-    } else {
-      throw new Error('Failed to check screenshot status');
-    }
-  } catch (error) {
-    if (error.name === 'AbortError') {
-      console.log('Screenshot status check aborted.');
-    } else {
-      console.error('Error checking screenshot status:', error);
-    }
-    return false;
-  }
 };
+
 
 const updateCheckboxes = async (blendShapes) => {
   if (!blendShapes || !blendShapes[0] || !blendShapes[0].categories) {
@@ -409,7 +402,6 @@ const updateCheckboxes = async (blendShapes) => {
     };
 
     console.log("Scores:", scores);
-
     if (scores.eyeLookOutLeft >= 0.8 && scores.eyeLookInRight >= 0.8 && !eyeLookOutLeftCompleted) {
       setEyeLookOutLeftCompleted(true);
       setEyeLookOutLeftScore(scores.eyeLookOutLeft);
@@ -424,7 +416,7 @@ const updateCheckboxes = async (blendShapes) => {
       localStorage.setItem('left', 'true');
     }
 
-    if (scores.mouthSmileRight >= 0.8 && scores.mouthSmileLeft >= 0.8 &&  !smileCompleted) {
+    if (scores.mouthSmileRight >= 0.8 && scores.mouthSmileLeft >= 0.8 && !smileCompleted) {
       setSmileCompleted(true);
       setMouthSmileRightScore(scores.mouthSmileRight);
       setMouthSmileLeftScore(scores.mouthSmileLeft);
@@ -433,9 +425,9 @@ const updateCheckboxes = async (blendShapes) => {
     }
 
     // Check if all actions are completed and stored in localStorage
-    const right = localStorage.getItem('right') 
-    const left = localStorage.getItem('left') 
-    const smiling = localStorage.getItem('smiling')
+    const right = localStorage.getItem('right');
+    const left = localStorage.getItem('left');
+    const smiling = localStorage.getItem('smiling');
 
     if (right && left && smiling && !screenshotTaken) {
       try {
@@ -444,9 +436,6 @@ const updateCheckboxes = async (blendShapes) => {
         const username = localStorage.getItem('username');
         if (await checkScreenshotStatus(username)) {
           console.log('Screenshot saved confirmed. Stopping webcam.');
-          localStorage.removeItem('right');
-          localStorage.removeItem('left');
-          localStorage.removeItem('smiling');
         } else {
           console.log('Screenshot not confirmed saved. Retry capturing.');
         }
@@ -464,6 +453,10 @@ const handleContinue = () => {
     abortController.abort();
   }
   // Stop webcam
+ 
+  localStorage.removeItem('right');
+  localStorage.removeItem('left');
+  localStorage.removeItem('smiling');
   disableWebcam();
   // Navigate to the next page
   window.location.href = '/selfie';
@@ -498,129 +491,104 @@ useEffect(() => {
   fetchUserData();
 }, [navigate]);
 
-const handleLogout = async () => {
-  try {
-    const token = localStorage.getItem('token');
-    await axios.post('http://localhost:5000/logout', {}, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    // Clear localStorage on logout
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-
-    // Redirect to login
-    navigate('/login');
-  } catch (error) {
-    console.error('Error logging out:', error);
-  }
-};
-  
 
 
   return (
-<Container>
+<Container fluid >
+<div className="header">
+        <div className="header-content">
+          <div className="text-content">
+            <h1>DEVOSPACE</h1>
+            <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
+          </div>
+        </div>
+        <div className="image-container">
+          <img src={head_rightImg} alt="Verification Process" className="verification-image" />
+        </div>
+</div>
 <Row>
+<ToastContainer />
 {userData ? (
             <>
               <h1>Welcome, {userData.username}!</h1>
-              <p>Email: {userData.email}</p>
             </>
           ) : (
             <p>Loading user data...</p>
           )}
   <Col md={6}>
     <div className="verification-steps">
-      <h1></h1>
-      <h2 className="mb-4">Verification Steps</h2>
-      <ul className="list-unstyled">
-        <li className={`d-flex align-items-center mb-2 ${eyeLookOutLeftCompleted ? 'completed' : ''}`}>
-          <input type="checkbox" checked={eyeLookOutLeftCompleted} readOnly />
-          <span className="ms-2">Turn your face to the right</span>
-        </li>
-        <li className={`d-flex align-items-center mb-2 ${eyeLookInRightCompleted ? 'completed' : ''}`}>
-          <input type="checkbox" checked={eyeLookInRightCompleted} readOnly />
-          <span className="ms-2">Turn your face to the left</span>
-        </li>
-        <li className={`d-flex align-items-center mb-2 ${smileCompleted ? 'completed' : ''}`}>
-          <input type="checkbox" checked={smileCompleted} readOnly />
-          <span className="ms-2">Smile</span>
-        </li>
-      </ul>
-      <img src='/icon3.png' alt="check icon" className="status-icon" />
-      <h2 className="mt-4">Scanning your face</h2>
-      <p>Please wait for the scan to complete before proceeding to the next step</p>
-      <p>if you want to continue you ve to resoect t order of t steps </p> 
-      <div className="scan-status">
-        <div className="mb-3">
-          <label htmlFor="right">Look Right</label>
-          <div className="d-flex align-items-center">
-            <input
-              id="right"
-              type="text"
-              placeholder="EyeLookOutLeft Value"
-              className={`form-control ${eyeLookOutLeftCompleted ? 'completed' : spoofingDetected ? 'spoofing' : ''}`}
-              readOnly
-            />
-   
-            {spoofingDetected && !eyeLookOutLeftCompleted && (
-              <img src='/spoofing-detected.png' alt="spoofing detected" className="status-icon ms-2" />
-            )}
-            {eyeLookOutLeftCompleted && (
-              <img src='/checked.png' alt="check icon" className="status-icon ms-2" />
-            )}
-           {!spoofingDetected && !eyeLookOutLeftCompleted && (
-                           <img src='/progre.png' alt="progress icon" className="status-icon ms-2" />
-            )}
 
-          </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="left">Look Left</label>
-          <div className="d-flex align-items-center">
-            <input
-              id="left"
-              type="text"
-              placeholder="EyeLookInRight Value"
-              className={`form-control ${eyeLookInRightCompleted ? 'completed' : spoofingDetected ? 'spoofing' : ''}`}
-              readOnly
-            />
-            {spoofingDetected && !eyeLookInRightCompleted && (
-              <img src='/spoofing-detected.png' alt="spoofing detected" className="status-icon ms-2" />
-            )}
-            {eyeLookInRightCompleted && (
-              <img src='/checked.png' alt="check icon" className="status-icon ms-2" />
-            )}
-            {!spoofingDetected && !eyeLookOutLeftCompleted && (
-                           <img src='/progre.png' alt="progress icon" className="status-icon ms-2" />
-            )}
-            
-          </div>
-        </div>
-        <div className="mb-3">
-          <label htmlFor="mouth">Smile</label>
-          <div className="d-flex align-items-center">
-            <input
-              id="mouth"
-              type="text"
-              placeholder="Smile Value"
-              className={`form-control ${smileCompleted ? 'completed' : spoofingDetected ? 'spoofing' : ''}`}
-              readOnly
-            />
-            {spoofingDetected && !smileCompleted && (
-              <img src='/spoofing-detected.png' alt="spoofing detected" className="status-icon ms-2" />
-            )}
-            {smileCompleted && (
-              <img src='/checked.png' alt="check icon" className="status-icon ms-2" />
-            )}
-            {!spoofingDetected && !eyeLookOutLeftCompleted && (
-                           <img src='/progre.png' alt="progress icon" className="status-icon ms-2" />
-            )}
-          </div>
-        </div>
+     <div className="d-flex align-items-center mb-4">
+    <img src='/icon3.png' alt="check icon" className="status-icon me-2" />
+    <h2 className="mb-0">Scanning your face</h2>
+  </div>
+          
+    <ul className='ms-3'>
+      <li className='ml-5'>Please wait for the scan to complete before proceeding to the next step .</li>
+      <li>if you want to continue you ve to  achieve all requere mouvment in the same order .</li> 
+      </ul>
+  <hr/>
+  <div className="scan-status  ms-3">
+  <div className="mb-3">
+    <label htmlFor="right">Look Right</label>
+    <div className="d-flex align-items-center">
+      <div
+        id="right"
+        className={`form-control ${eyeLookOutLeftCompleted ? 'bg-success text-white' : spoofingDetected ? 'bg-danger text-white' : ''}`}
+      >
       </div>
+      {spoofingDetected && !eyeLookOutLeftCompleted && (
+        <img src='/spoofing-detected.png' alt="spoofing detected" className="status-icon ms-2" />
+      )}
+      {eyeLookOutLeftCompleted && (
+        <img src='/checked.png' alt="check icon" className="status-icon ms-2" />
+      )}
+      {!spoofingDetected && !eyeLookOutLeftCompleted && (
+        <img src='/progre.png' alt="progress icon" className="status-icon ms-2" />
+      )}
     </div>
-  </Col>
+  </div>
+  <div className="mb-3">
+    <label htmlFor="left">Look Left</label>
+    <div className="d-flex align-items-center">
+      <div
+        id="left"
+        className={`form-control ${eyeLookInRightCompleted ? 'bg-success text-white' : spoofingDetected ? 'bg-danger text-white' : ''}`}
+      >
+      </div>
+      {spoofingDetected && !eyeLookInRightCompleted && (
+        <img src='/spoofing-detected.png' alt="spoofing detected" className="status-icon ms-2" />
+      )}
+      {eyeLookInRightCompleted && (
+        <img src='/checked.png' alt="check icon" className="status-icon ms-2" />
+      )}
+      {!spoofingDetected && !eyeLookOutLeftCompleted && (
+        <img src='/progre.png' alt="progress icon" className="status-icon ms-2" />
+      )}
+    </div>
+  </div>
+  <div className="mb-3">
+    <label htmlFor="mouth">Smile</label>
+    <div className="d-flex align-items-center">
+      <div
+        id="mouth"
+        className={`form-control ${smileCompleted ? 'bg-success text-white' : spoofingDetected ? 'bg-danger text-white' : ''}`}
+      >
+      </div>
+      {spoofingDetected && !smileCompleted && (
+        <img src='/spoofing-detected.png' alt="spoofing detected" className="status-icon ms-2" />
+      )}
+      {smileCompleted && (
+        <img src='/checked.png' alt="check icon" className="status-icon ms-2" />
+      )}
+      {!spoofingDetected && !eyeLookOutLeftCompleted && (
+        <img src='/progre.png' alt="progress icon" className="status-icon ms-2" />
+      )}
+    </div>
+  </div>
+</div>
+</div>
+</Col>
   <Col md={6}>
     <h2 className="mb-4">Scanning your face</h2>
     <p>Please wait for the scan to complete before proceeding to the next step</p>
@@ -657,7 +625,6 @@ const handleLogout = async () => {
       )}
     </div>
   </Col>
-  <Button variant="danger" onClick={handleLogout} style={{ marginTop: '20px' }}>Logout</Button>
 </Row>
 </Container>
   );

@@ -4,9 +4,9 @@ import subscribe from '../assets/subscribe.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Login/Login.css';
-import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
+// import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import { ToastContainer, toast } from 'react-toastify';
-import { app } from '../firebase';
+// import { app } from '../firebase';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
@@ -40,7 +40,8 @@ const Login = () => {
       const response = await axios.post('http://localhost:5000/login', { username, password });
 
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('role', response.data.role);  // Store user role
+      localStorage.setItem('role', response.data.role);
+      // localStorage.setItem('username', response.data.username);  // Store user role
       toast.success('Successfully logged in!');
 
       // Redirect based on user role
@@ -84,7 +85,7 @@ const Login = () => {
                 Login
               </Button>
               <p className="signup-link">
-                Don't have an account? <Link to="/SignUp">Sign Up</Link>
+                Dont have an account? <Link to="/SignUp">Sign Up</Link>
               </p>
             </Form>
           </div>

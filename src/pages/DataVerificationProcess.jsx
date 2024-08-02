@@ -1,19 +1,19 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
-import '../components/Dataverification/DataVerification.css';
 import { Link, useNavigate } from 'react-router-dom';
-import head_rightImg from '../assets/head_rightImg.png';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import head_rightImg from '../assets/head_rightImg.png';
+import '../components/Dataverification/DataVerification.css';
 
 const DataVerificationProcess = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
-  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
 
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
-    setIsButtonEnabled(!isChecked);
   };
 
   useEffect(() => {
@@ -21,7 +21,8 @@ const DataVerificationProcess = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          navigate('/login'); // Redirect to login if not authenticated
+          toast.error('No token found. Please log in.');
+          navigate('/login'); 
           return;
         }
 
@@ -29,47 +30,22 @@ const DataVerificationProcess = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserData(response.data.user_data);
+        localStorage.setItem('username', response.data.user_data.username);
+        toast.success(`welcome back ${ response.data.user_data.username}.`);
       } catch (error) {
-        console.error('Error fetching user data:', error);
-        navigate('/login'); // Redirect to login if there's an error
+        toast.error('Error fetching user data. Train again .');
+        navigate('/login');
       }
     };
 
     fetchUserData();
   }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/logout', {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-  
-      // Clear localStorage on logout
-      localStorage.removeItem('token');
-      localStorage.removeItem('username');
-  
-      // Redirect to login
-      navigate('/login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-  
-  
-
   return (
     <Container fluid>
+      <ToastContainer />
       <div className="header">
         <div className="header-content">
-          {userData ? (
-            <>
-              <h1>Welcome, {userData.username}!</h1>
-              <p>Email: {userData.email}</p>
-            </>
-          ) : (
-            <p>Loading user data...</p>
-          )}
           <div className="text-content">
             <h1>DEVOSPACE</h1>
             <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
@@ -80,6 +56,13 @@ const DataVerificationProcess = () => {
         </div>
       </div>
       <div className="content">
+        {userData ? (
+          <>
+            <h1>Welcome, {userData.username}!</h1>
+          </>
+        ) : (
+          <p>Loading user data...</p>
+        )}
         <h2>Data Verification</h2>
         <div className="verification-items">
           <div className="item">
@@ -107,9 +90,8 @@ const DataVerificationProcess = () => {
             I consent to my personal information being processed by a third party for identity verification.
           </label>
         </div>
-        <Button variant="danger" onClick={handleLogout} style={{ marginTop: '20px' }}>Logout</Button>
-        <Link to="/scan">
-          <Button>
+        <Link to={isChecked ? "/scan" : "#"}>
+          <Button disabled={!isChecked}>
             Start verification process
           </Button>
         </Link>

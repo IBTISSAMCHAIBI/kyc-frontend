@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
-import { Container } from 'react-bootstrap';
-import '../components/Dataverification/ScanFacePage.css'; 
+import { Container, Button } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import Toastify styles
 import head_rightImg from '../assets/head_rightImg.png';
 import { Link } from 'react-router-dom';
 
@@ -13,6 +14,19 @@ function TakeSelfie() {
     const [selfieImageUrl, setSelfieImageUrl] = useState(null);
     const webcamRef = useRef(null);
     const navigate = useNavigate();
+
+    // Show a toast notification when the component mounts
+    useEffect(() => {
+        toast.info('Please reload the page for better accuracy.', {
+            position: "top-center",
+            autoClose: 5000, // Auto close after 5 seconds
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+    }, []);
 
     const uploadSelfieImage = async (file) => {
         const username = localStorage.getItem('username');
@@ -137,22 +151,28 @@ function TakeSelfie() {
     };
 
     return (
-        <Container fluid>
+        <Container fluid style={{ padding: '20px' }}>
             <div className="verification-container">
                 <div className="header">
                     <div className="header-content">
                         <div className="text-content">
-                            <h1>DEVOSPACE</h1>
-                            <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
+                            <h1 >DEVOSPACE</h1>
+                            <p >Seamless Real-time <span style={{ color: '#FFD96D' }}>Identity</span> Verification</p>
                         </div>
                     </div>
                     <div className="image-container">
-                        <img src={head_rightImg} alt="Verification Process" className="verification-image" />
+                        <img src={head_rightImg} alt="Verification Process" style={{ width: '100%', maxWidth: '500px', borderRadius: '10px' }} />
                     </div>
                 </div>
-                <h1>Verification</h1>
-                <div className="capture-container">
-                    <button type="button" onClick={() => setShowIdWebcam(true)} className="capture-button">Open cam for ID</button>
+                <h1 style={{ marginBottom: '20px' }}>Verification</h1>
+                <div className="capture-container" style={{ marginBottom: '20px' }}>
+                    <Button
+                        type="button"
+                        onClick={() => setShowIdWebcam(true)}
+                        style={{ backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '5px' }}
+                    >
+                        Open cam for ID
+                    </Button>
                     {showIdWebcam && (
                         <div>
                             <Webcam
@@ -161,42 +181,60 @@ function TakeSelfie() {
                                 screenshotFormat="image/jpeg"
                                 width={320}
                                 height={240}
-                                className="webcam"
+                                style={{ border: '2px solid #007bff', borderRadius: '5px' }}
                             />
-                            <button type="button" onClick={captureIdImage} className="capture-button">Capture ID Image</button>
+                            <Button
+                                type="button"
+                                onClick={captureIdImage}
+                                style={{ backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', marginTop: '10px' }}
+                            >
+                                Capture ID Image
+                            </Button>
                         </div>
                     )}
                 </div>
-                <div className="capture-container">
-                    <form onSubmit={handleSubmit} className="verification-form">
-                        <button type="submit" className="submit-button">Start verification</button>
+                <div className="capture-container" style={{ marginBottom: '20px' }}>
+                    <form onSubmit={handleSubmit}>
+                        <Button
+                            type="submit"
+                            style={{ backgroundColor: '#ffc107', color: '#000', border: 'none', borderRadius: '5px' }}
+                        >
+                            Start verification
+                        </Button>
                     </form>
                 </div>
-                <div className="capture-container">
-                    <button type="button" onClick={fetchSelfieImage} className="capture-button">Display Captured Selfie</button>
-                    {selfieImageUrl && <img src={selfieImageUrl} alt="Captured Selfie" className="captured-selfie" />}
+                <div className="capture-container" style={{ marginBottom: '20px' }}>
+                    <Button
+                        type="button"
+                        onClick={fetchSelfieImage}
+                        style={{ backgroundColor: '#17a2b8', color: '#fff', border: 'none', borderRadius: '5px' }}
+                    >
+                        Display Captured Selfie
+                    </Button>
+                    {selfieImageUrl && <img src={selfieImageUrl} alt="Captured Selfie" style={{ width: '100%', maxWidth: '320px', borderRadius: '10px', marginTop: '10px' }} />}
                 </div>
-                {error && <div className="error-message">{error}</div>}
+                {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
                 {result && (
-                    <div className="result-container">
+                    <div style={{ marginTop: '20px' }}>
                         {result.similarity_score > 0.20 ? (
                             <div>
                                 <Link to="/scancard">
-                                    <p className="success-message">You are verified and can proceed to card and information verification.</p>
-                                    <button className="continue-button">Continue</button>
+                                    <p style={{ color: 'green', fontSize: '1.25rem' }}>You are verified and can proceed to card and information verification.</p>
+                                    <Button style={{ backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '5px' }}>Continue</Button>
                                 </Link>
                             </div>
                         ) : (
                             <div>
                                 <Link to="/scan">
-                                    <p className="error-message">We can't ensure that you are the live person.</p>
-                                    <button className="holdback-button">Hold Back</button>
+                                    <p style={{ color: 'red', fontSize: '1.25rem' }}>We cant ensure that you are the live person.</p>
+                                    <Button style={{ backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '5px' }}>Retry</Button>
                                 </Link>
                             </div>
                         )}
                     </div>
                 )}
             </div>
+            <ToastContainer />
         </Container>
     );
 }
