@@ -453,6 +453,85 @@ const checkScreenshotStatus = async (username) => {
 //     return false;
 //   }
 // };
+// const updateCheckboxes = async (blendShapes) => {
+//   if (!blendShapes || !blendShapes[0] || !blendShapes[0].categories) {
+//     console.log("No blend shapes data available.");
+//     return;
+//   }
+//   if (currentStep < steps.length && !isPaused) {
+//     if (!startTime) {
+//       startTime = new Date().getTime();
+//     }
+//     if (checkActionCompletion(blendShapes, steps[currentStep])) {
+//       steps[currentStep].completed = true;
+//       isPaused = true;
+//       setTimeout(() => {
+//         currentStep++;
+//         isPaused = false;
+//         startTime = null;
+//         console.log(`Step ${steps[currentStep]?.actionName} completed.`);
+//       }, steps[currentStep].pauseDuration);
+//     } else if (new Date().getTime() - startTime > steps[currentStep].pauseDuration) {
+//       if (!steps[currentStep].completed) {
+//         setSpoofingDetected(true);
+//         console.log("Spoofing detected!");
+//         stopWebcamAndLogic('Spoofing detected!');
+//         return;
+//       }
+//     }
+//   }
+
+//   if (currentStep < steps.length) {
+//     const blendShapeData = blendShapes[0].categories;
+//     const scores = {
+//       eyeLookOutLeft: blendShapeData.find(shape => shape.categoryName === 'eyeLookOutLeft')?.score || 0,
+//       eyeLookInRight: blendShapeData.find(shape => shape.categoryName === 'eyeLookInRight')?.score || 0,
+//       eyeLookInLeft: blendShapeData.find(shape => shape.categoryName === 'eyeLookInLeft')?.score || 0,
+//       eyeLookOutRight: blendShapeData.find(shape => shape.categoryName === 'eyeLookOutRight')?.score || 0,
+//       mouthSmileRight: blendShapeData.find(shape => shape.categoryName === 'mouthSmileRight')?.score || 0,
+//       mouthSmileLeft: blendShapeData.find(shape => shape.categoryName === 'mouthSmileLeft')?.score || 0,
+//     };
+
+//     console.log("Scores:", scores);
+
+//     if (scores.eyeLookOutLeft >= 0.8 && scores.eyeLookInRight >= 0.8 && !eyeLookOutLeftCompleted) {
+//       setEyeLookOutLeftCompleted(true);
+//       setEyeLookOutLeftScore(scores.eyeLookOutLeft);
+//       console.log("Eye Look Out Left completed.");
+//     }
+
+//     if (scores.eyeLookInLeft >= 0.8 && scores.eyeLookOutRight >= 0.8 && !eyeLookInRightCompleted) {
+//       setEyeLookInRightCompleted(true);
+//       setEyeLookInRightScore(scores.eyeLookInLeft);
+//       console.log("Eye Look In Right completed.");
+//     }
+
+//     if (scores.mouthSmileRight >= 0.8 && scores.mouthSmileLeft >= 0.8 &&  !smileCompleted) {
+//       setSmileCompleted(true);
+//       setMouthSmileRightScore(scores.mouthSmileRight);
+//       setMouthSmileLeftScore(scores.mouthSmileLeft);
+//       console.log("Smile completed.");
+
+//       if (!screenshotTaken) {
+//         try {
+//           await captureScreenshot();
+//           console.log('Screenshot captured.');
+//           const username = localStorage.getItem('username');
+//           if (await checkScreenshotStatus(username)) {
+//             console.log('Screenshot saved confirmed. Stopping webcam.');
+//           } else {
+//             console.log('Screenshot not confirmed saved. Retry capturing.');
+//           }
+//         } catch (error) {
+//           console.error('Error capturing screenshot:', error);
+//         }
+//       }
+//     }
+
+ 
+//   }
+// };
+
 const updateCheckboxes = async (blendShapes) => {
   if (!blendShapes || !blendShapes[0] || !blendShapes[0].categories) {
     console.log("No blend shapes data available.");
@@ -498,12 +577,14 @@ const updateCheckboxes = async (blendShapes) => {
       setEyeLookOutLeftCompleted(true);
       setEyeLookOutLeftScore(scores.eyeLookOutLeft);
       console.log("Eye Look Out Left completed.");
+      localStorage.setItem('right', 'true');
     }
 
     if (scores.eyeLookInLeft >= 0.8 && scores.eyeLookOutRight >= 0.8 && !eyeLookInRightCompleted) {
       setEyeLookInRightCompleted(true);
       setEyeLookInRightScore(scores.eyeLookInLeft);
       console.log("Eye Look In Right completed.");
+      localStorage.setItem('left', 'true');
     }
 
     if (scores.mouthSmileRight >= 0.8 && scores.mouthSmileLeft >= 0.8 &&  !smileCompleted) {
@@ -511,26 +592,31 @@ const updateCheckboxes = async (blendShapes) => {
       setMouthSmileRightScore(scores.mouthSmileRight);
       setMouthSmileLeftScore(scores.mouthSmileLeft);
       console.log("Smile completed.");
-
-      if (!screenshotTaken) {
-        try {
-          await captureScreenshot();
-          console.log('Screenshot captured.');
-          const username = localStorage.getItem('username');
-          if (await checkScreenshotStatus(username)) {
-            console.log('Screenshot saved confirmed. Stopping webcam.');
-          } else {
-            console.log('Screenshot not confirmed saved. Retry capturing.');
-          }
-        } catch (error) {
-          console.error('Error capturing screenshot:', error);
-        }
-      }
+      localStorage.setItem('smiling', 'true');
     }
 
- 
+    // Check if all actions are completed and stored in localStorage
+    const right = localStorage.getItem('right') 
+    const left = localStorage.getItem('left') 
+    const smiling = localStorage.getItem('smiling')
+
+    if (right && left && smiling && !screenshotTaken) {
+      try {
+        await captureScreenshot();
+        console.log('Screenshot captured.');
+        const username = localStorage.getItem('username');
+        if (await checkScreenshotStatus(username)) {
+          console.log('Screenshot saved confirmed. Stopping webcam.');
+        } else {
+          console.log('Screenshot not confirmed saved. Retry capturing.');
+        }
+      } catch (error) {
+        console.error('Error capturing screenshot:', error);
+      }
+    }
   }
 };
+
 
 const handleContinue = () => {
   // Abort ongoing requests
