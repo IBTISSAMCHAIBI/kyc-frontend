@@ -2,10 +2,28 @@ import React from 'react';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import head_rightImg from '../assets/headerRght.png';
 import '../components/Dataverification/DataVerification.css';
-
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { Link ,useNavigate } from 'react-router-dom';
 
 function VerificationCompleted () {
+  const navigate=useNavigate()
+  const handleLogout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:5000/logout', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Clear localStorage on logout
+      localStorage.removeItem('token');
+      localStorage.removeItem('username'); // Correctly remove username
+
+      // Redirect to login
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
   return (
       <Container fluid>
         <div className="header">
@@ -34,6 +52,7 @@ function VerificationCompleted () {
            {/* <Link to="/ending">
             <Button size="lg">Continue</Button>
         </Link> */}
+            <Button variant="danger" onClick={handleLogout}>Logout</Button>
           </Col>
         </Row>
       </Container>
