@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -14,7 +14,7 @@ import Ending from './pages/Ending';
 import ProtectedRoute from './pages/ProtectedRoute'; // Import <ProtectedRoute></ProtectedRoute
 import AdminDashboard from './pages/AdminDashboard';
 import AutoLogin from './pages/AutoLogin ';
-
+import ErrorPage from './pages/Errorpage';
 const App = () => {
   return (
     <Router>
@@ -38,6 +38,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+           <Route
+          path="/error"
+          element={
+            <ProtectedRoute>
+              <ErrorPage/>
             </ProtectedRoute>
           }
         />

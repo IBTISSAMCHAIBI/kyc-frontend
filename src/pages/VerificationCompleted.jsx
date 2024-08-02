@@ -1,9 +1,9 @@
-import React from 'react';
+
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import head_rightImg from '../assets/headerRght.png';
 import '../components/Dataverification/DataVerification.css';
 import axios from 'axios';
-import { Link ,useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function VerificationCompleted () {
   const navigate=useNavigate()
@@ -43,8 +43,7 @@ function VerificationCompleted () {
           <Col md={6} className="text-center">
             <img src="/done.png" alt="Hero Background" className="img-fluid" />
             <h1>Face recognation completed</h1>
-            <p>Thank you for following all these detailed steps to successfully perform facial recognition.
-                 Click on 'Continue' to see the result.</p>
+            <p>Thank you for following all these detailed steps to successfully perform facial recognition.</p>
           </Col>
         </Row>
         <Row className="justify-content-center mt-5">

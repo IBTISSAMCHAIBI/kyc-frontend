@@ -213,7 +213,7 @@ const navigate = useNavigate();
       if (result.similarity_score > 0.80) {
         navigate('/dataverficationcompleted'); // Replace with your actual route
       } else {
-        toast.error('You are not correspondent to the alive person');
+        navigate('/error'); 
       }
     }
   }, [result, navigate]);
