@@ -13,6 +13,7 @@ const AdminDashboard = () => {
   const [clientError, setClientError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
   const [clients, setClients] = useState([]);
+  const [emailSendingStatus, setEmailSendingStatus] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -96,6 +97,19 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleSendEmails = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post('http://localhost:5000/send-client-emails', {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setEmailSendingStatus(response.data.success); // Display status message
+    } catch (error) {
+      setEmailSendingStatus('An error occurred while sending emails.');
+    }
+  };
+
   return (
     <Container fluid className="admin-dashboard">
       <Row>
@@ -167,7 +181,7 @@ const AdminDashboard = () => {
               <Card.Body>
                 <ul>
                   {clients.map(client => (
-                    <li key={client.company}>{client.company} - {client.email}</li>
+                    <li key={client.email}>{client.company} - {client.email}</li>
                   ))}
                 </ul>
               </Card.Body>
@@ -175,6 +189,17 @@ const AdminDashboard = () => {
           </Col>
         </Row>
       )}
+      <Row className="mt-4">
+        <Col>
+          <Card>
+            <Card.Header>Send Emails to All Clients</Card.Header>
+            <Card.Body>
+              <Button variant="primary" onClick={handleSendEmails}>Send Emails</Button>
+              {emailSendingStatus && <Alert variant="info" className="mt-3">{emailSendingStatus}</Alert>}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   );
 };

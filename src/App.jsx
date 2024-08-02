@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import Ending from './pages/Ending';
 import ProtectedRoute from './pages/ProtectedRoute'; // Import <ProtectedRoute></ProtectedRoute
 import AdminDashboard from './pages/AdminDashboard';
+import AutoLogin from './pages/AutoLogin ';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/SignUp" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
+        <Route path="/auto-login" element={<AutoLogin />} />
         
         {/* Protected Routes */}
         <Route
