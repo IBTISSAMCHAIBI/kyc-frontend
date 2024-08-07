@@ -9,6 +9,8 @@ import { ToastContainer, toast } from 'react-toastify';
 // import { app } from '../firebase';
 import 'react-toastify/dist/ReactToastify.css';
 // const baseURL = import.meta.env.REACT_APP_BASE_URL;
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -37,7 +39,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`https://kyc-backend-api-bfb5ecbf820e.herokuapp.com/login`, { username, password });
+      const response = await axios.post(`${baseURL}/login`, { username, password });
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.role);
