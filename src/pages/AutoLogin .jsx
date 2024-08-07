@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
-
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 const AutoLogin = () => {
     const [message, setMessage] = useState('Logging you in...');
     const navigate = useNavigate();

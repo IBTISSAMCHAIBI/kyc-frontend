@@ -4,8 +4,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
-
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 const AdminDashboard = () => {
 
   const [message, setMessage] = useState('');

@@ -4,7 +4,8 @@ import head_rightImg from '../assets/headerRght.png';
 import '../components/Dataverification/ErrorPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 
 function ErrorPage() {
     const navigate=useNavigate()

@@ -6,8 +6,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import head_rightImg from '../assets/head_rightImg.png';
 import '../components/Dataverification/DataVerification.css';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
-
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 const DataVerificationProcess = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();

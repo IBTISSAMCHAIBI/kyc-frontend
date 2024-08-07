@@ -6,7 +6,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify styles
 import head_rightImg from '../assets/head_rightImg.png';
 import { Link } from 'react-router-dom';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 function TakeSelfie() {
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);

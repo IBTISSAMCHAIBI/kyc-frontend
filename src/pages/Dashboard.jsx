@@ -3,7 +3,8 @@ import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 
 const Dashboard = () => {
   const [file, setFile] = useState(null);

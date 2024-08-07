@@ -5,7 +5,8 @@ import { Container, Button } from 'react-bootstrap';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-const baseURL = import.meta.env.REACT_APP_BASE_URL;
+import { CONFIG } from './config';
+const baseURL = CONFIG.BASE_URL;
 const ScanCard = () => {
   const [capturedImage, setCapturedImage] = useState(null);
   const [verificationMessage, setVerificationMessage] = useState('');
