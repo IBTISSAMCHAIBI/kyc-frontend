@@ -532,9 +532,7 @@ return (
     padding: '15px', 
     border: '2px solid #007bff', 
     borderRadius: '5px', 
-    textAlign: 'center', 
-    marginBottom: '20px',
-    lineHeight: '1.5' /* Increase line height for better readability */
+    marginBottom: '20px', /* Increase line height for better readability */
 }}>
    <li> You need to perform these movements one after another and rapidly, as the webcam will open after 3 seconds. If none of the movements are achieved, you will need to try again.</li>
    <li>a continue button will appear just when you acheive the 3 mouvment .</li>
