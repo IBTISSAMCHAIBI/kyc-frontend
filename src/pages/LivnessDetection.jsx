@@ -526,7 +526,7 @@ return (
           )}
   <Col md={6}>
     <div className="verification-steps">
-    <h2 style={{
+    <ul style={{
     fontSize: '1.4rem', 
     fontWeight: 'bold', 
     color: '#333', 
@@ -538,8 +538,12 @@ return (
     marginBottom: '20px',
     lineHeight: '1.5' /* Increase line height for better readability */
 }}>
-    You need to perform these movements one after another and rapidly, as the webcam will open after 3 seconds. If none of the movements are achieved, you will need to try again.
-</h2>
+   <li> You need to perform these movements one after another and rapidly, as the webcam will open after 3 seconds. If none of the movements are achieved, you will need to try again.</li>
+   <li>a continue button will appear just when you acheive the 3 mouvment .</li>
+   <li>when you click on go to livness detection button you have to click on enable webcam first .</li>
+   
+
+</ul>
 
      <div className="d-flex align-items-center mb-4">
     <img src='/icon3.png' alt="check icon" className="status-icon me-2" />
