@@ -166,6 +166,7 @@ function TakeSelfie() {
                     </div>
                 </div>
                 <h1 style={{ marginBottom: '20px' }}>Verification</h1>
+                <h2>please wait untile you got the notif of selfie upload </h2>
                 <div className="capture-container" style={{ marginBottom: '20px' }}>
                     <Button
                         type="button"

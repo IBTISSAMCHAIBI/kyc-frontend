@@ -526,7 +526,7 @@ return (
           )}
   <Col md={6}>
     <div className="verification-steps">
-
+      <h2>you ve to do these mouvment one after one and rapidally because web cam open after 3 esund if none of te mouvment achieved and you ve to try again</h2> 
      <div className="d-flex align-items-center mb-4">
     <img src='/icon3.png' alt="check icon" className="status-icon me-2" />
     <h2 className="mb-0">Scanning your face</h2>
