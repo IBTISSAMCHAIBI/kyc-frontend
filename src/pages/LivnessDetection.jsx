@@ -526,7 +526,21 @@ return (
           )}
   <Col md={6}>
     <div className="verification-steps">
-      <h2>you ve to do these mouvment one after one and rapidally because web cam open after 3 esund if none of te mouvment achieved and you ve to try again</h2> 
+    <h2 style={{
+    fontSize: '1.4rem', 
+    fontWeight: 'bold', 
+    color: '#333', 
+    backgroundColor: '#e9ecef', 
+    padding: '15px', 
+    border: '2px solid #007bff', 
+    borderRadius: '5px', 
+    textAlign: 'center', 
+    marginBottom: '20px',
+    lineHeight: '1.5' /* Increase line height for better readability */
+}}>
+    You need to perform these movements one after another and rapidly, as the webcam will open after 3 seconds. If none of the movements are achieved, you will need to try again.
+</h2>
+
      <div className="d-flex align-items-center mb-4">
     <img src='/icon3.png' alt="check icon" className="status-icon me-2" />
     <h2 className="mb-0">Scanning your face</h2>

@@ -49,15 +49,35 @@ function TakeSelfie() {
                 },
                 body: formData,
             });
+              
     
             if (!response.ok) {
                 throw new Error('Failed to upload selfie');
+                
             }
     
             const data = await response.json();
+            toast.success('Selfie uploaded successfully!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             console.log(data.message);
         } catch (error) {
             console.error('Error uploading selfie:', error);
+            toast.error('Error uploading selfie. Please try again.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         }
     };
 
@@ -79,6 +99,15 @@ function TakeSelfie() {
             const file = new File([blob], "selfie.jpg", { type: "image/jpg" });
             uploadSelfieImage(file).finally(() => isUploading = false);
             setShowIdWebcam(false); // Close webcam after capture
+            toast.success('Selfie captured and uploading...', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         }
     };
 
@@ -96,8 +125,17 @@ function TakeSelfie() {
         if (!token) {
             console.error('User is not authenticated');
             return;
+            
         }
-
+        toast.info('Starting verification process...', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
         try {
             const response = await fetch(`${baseURL}/match_faces/${username}`, {
                 method: 'POST',
@@ -117,7 +155,17 @@ function TakeSelfie() {
             setError(null);
         } catch (error) {
             console.error('Fetch error:', error.message); // Log any errors
-            setError(error.message); // Handle error
+            setError(error.message); 
+            toast.error('Verification failed. Please try again.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+            // Handle error
             navigate('/error'); // Redirect to error page
         }
     };
@@ -142,12 +190,31 @@ function TakeSelfie() {
             if (!response.ok) {
                 throw new Error('Failed to fetch selfie image');
             }
+          
     
             const imageBlob = await response.blob();
             const imageUrl = URL.createObjectURL(imageBlob);
             setSelfieImageUrl(imageUrl);
+            toast.success('Selfie image fetched successfully!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         } catch (error) {
             console.error('Error fetching selfie image:', error);
+            toast.error('Error fetching selfie image. Please try again.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
         }
     };
 
@@ -166,7 +233,20 @@ function TakeSelfie() {
                     </div>
                 </div>
                 <h1 style={{ marginBottom: '20px' }}>Verification</h1>
-                <h2>please wait untile you got the notif of selfie upload </h2>
+                <h2 style={{
+                  fontSize: '1.5rem', 
+                  fontWeight: 'bold', 
+                  color: '#333', 
+                  backgroundColor: '#f8f9fa', 
+                  padding: '15px', 
+                  border: '2px solid #007bff', 
+                  borderRadius: '5px', 
+                  textAlign: 'center', 
+                  marginBottom: '20px'
+                    }}>
+                    Please wait until you get the notification of selfie upload
+                 </h2>
+
                 <div className="capture-container" style={{ marginBottom: '20px' }}>
                     <Button
                         type="button"
