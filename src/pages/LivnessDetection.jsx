@@ -526,9 +526,7 @@ return (
           )}
   <Col md={6}>
     <div className="verification-steps">
-    <ul style={{
-    fontSize: '1.4rem', 
-    fontWeight: 'bold', 
+    <ul style={{ 
     color: '#333', 
     backgroundColor: '#e9ecef', 
     padding: '15px', 
