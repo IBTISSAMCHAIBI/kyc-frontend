@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 
 const AutoLogin = () => {
     const [message, setMessage] = useState('Logging you in...');
@@ -29,7 +30,7 @@ const AutoLogin = () => {
         // Check if both token and email are present
         if (token && email) {
             // POST request to the backend
-            fetch('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/auto-login', {
+            fetch(`${baseURL}/auto-login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -43,6 +44,7 @@ const AutoLogin = () => {
                     // Redirect after successful login
                     navigate('/process');
                 } else if (data.message === 'Token has already been used' || data.message === 'Token has expired') {
+                    setMessage('somthing went wrong')
                     // Display link expired message
                     navigate('/Linkexpired');
                 } else {

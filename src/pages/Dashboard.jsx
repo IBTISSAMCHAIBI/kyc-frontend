@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import{ useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 
 const Dashboard = () => {
   const [file, setFile] = useState(null);
@@ -19,7 +20,7 @@ const Dashboard = () => {
           return;
         }
 
-        const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/dashboard', {
+        const response = await axios.get(`${baseURL}/dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserData(response.data.user_data);
@@ -47,7 +48,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/save-screenshot', formData, {
+      await axios.post(`${baseURL}/save-screenshot`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ const Dashboard = () => {
   const handleFileRetrieval = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/get-screenshot', {
+      const response = await axios.get(`${baseURL}/get-screenshot`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +82,7 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/logout', {}, {
+      await axios.post(`${baseURL}/logout`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       localStorage.removeItem('token'); // Clear the token

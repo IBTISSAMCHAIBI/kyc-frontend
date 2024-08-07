@@ -1,5 +1,5 @@
-import React from 'react';
-import {Col, Container, Row } from 'react-bootstrap';
+
+import { Container } from 'react-bootstrap';
 import head_rightImg from '../assets/headerRght.png';
 import '../components/Dataverification/Ending.css'
 

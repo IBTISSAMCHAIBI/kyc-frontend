@@ -4,14 +4,14 @@ import head_rightImg from '../assets/headerRght.png';
 import '../components/Dataverification/ErrorPage.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 
 function ErrorPage() {
     const navigate=useNavigate()
     const handleLogout = async () => {
         try {
           const token = localStorage.getItem('token');
-          await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/logout', {}, {
+          await axios.post(`${baseURL}/logout`, {}, {
             headers: { Authorization: `Bearer ${token}` }
           });
     

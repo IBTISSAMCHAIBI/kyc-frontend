@@ -8,7 +8,7 @@ import '../components/Login/Login.css';
 // import { app } from '../firebase';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -51,7 +51,7 @@ const SignUp = () => {
     e.preventDefault();
     console.log('Sign-Up Button Clicked'); // Debug log
     try {
-      const response = await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/create_user', { username: username, password: password });
+      const response = await axios.post(`${baseURL}/create_user`, { username: username, password: password });
       console.log('Response:', response.data); // Debug log
       toast.success('Successfully signed up!');
       // Redirect to login page

@@ -1,4 +1,4 @@
-import { Container, Row, Col , Button} from 'react-bootstrap';
+import { Container, Row, Col} from 'react-bootstrap';
 import  { useEffect, useRef, useState } from 'react';
 import vision from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
 import '../components/Dataverification/ScanFacePage.css';
@@ -8,8 +8,10 @@ const { FaceLandmarker, FilesetResolver, DrawingUtils } = vision;
 import head_rightImg from '../assets/head_rightImg.png';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-const ScanFacePage = () => {
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 
+
+const ScanFacePage = () => {
 const [eyeLookOutLeftCompleted, setEyeLookOutLeftCompleted] = useState(false);
 const [screenshotCaptured, setScreenshotCaptured] = useState(false);
 const [eyeLookInRightCompleted, setEyeLookInRightCompleted] = useState(false);
@@ -18,7 +20,7 @@ const [webcamEnabled, setWebcamEnabled] = useState(false);
 const [imageIndex, setImageIndex] = useState(0);
 const [faceLandmarker, setFaceLandmarker] = useState(null);
 const [runningMode, setRunningMode] = useState("IMAGE");
-const [webcamRunning, setWebcamRunning] = useState(false);;
+const [webcamRunning, setWebcamRunning] = useState(false);
 const [enableWebcamButton, setEnableWebcamButton] = useState(false);
 const webcamRef = useRef(null);
 const canvasRef = useRef(null);
@@ -32,10 +34,10 @@ const [mouthSmileLeftScore, setMouthSmileLeftScore] = useState(0);
 const [spoofingDetected, setSpoofingDetected] = useState(false);
 const [screenshotTaken, setScreenshotTaken] = useState(false);
 const [abortController, setAbortController] = useState(null);
-
 let currentStep = 0;
 let isPaused = false;
 let startTime = null;
+
 const steps = [
   {
     actionName: 'Turn Left',
@@ -65,7 +67,7 @@ const images = [
     { src: '/right.png', text: 'Look right' }
 ];
 
-  const predictWebcam = async () => {
+const predictWebcam = async () => {
     if (!webcamRef.current || !canvasRef.current || !faceLandmarker) {
       console.warn("Webcam or canvas or faceLandmarker is not ready.");
       return;
@@ -199,7 +201,8 @@ const images = [
                 faceLandmarker.setOptions({ runningMode: "VIDEO" });
                 setEnableWebcamButton(true);
                 setWebcamEnabled(true); // Set webcamEnabled to true
-                console.log("Webcam enabled and running.");
+                console.log(webcamEnabled);
+                console.log(enableWebcamButton)
             }
         })
         .catch((error) => {
@@ -259,7 +262,7 @@ const checkScreenshotStatus = async (username) => {
   setAbortController(controller);
 
   try {
-    const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/check-screenshot/${username}`, {
+    const response = await fetch(`${baseURL}/check-screenshot/${username}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
@@ -269,6 +272,7 @@ const checkScreenshotStatus = async (username) => {
     if (response.ok) {
       const result = await response.json();
       if (result.saved) {
+        setScreenshotTaken(true)
         console.log('Screenshot status checked successfully!');
       } else {
         toast.info('Screenshot status not saved.');
@@ -325,7 +329,7 @@ const captureScreenshot = async () => {
           formData.append('file', blob, 'screenshot.jpg');
 
           try {
-            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/upload-screenshot/${username}`, {
+            const response = await fetch(`${baseURL}/upload-screenshot/${username}`, {
               method: 'POST',
               body: formData,
               headers: {
@@ -406,6 +410,7 @@ const updateCheckboxes = async (blendShapes) => {
       setEyeLookOutLeftCompleted(true);
       setEyeLookOutLeftScore(scores.eyeLookOutLeft);
       console.log("Eye Look Out Left completed.");
+      console.log(eyeLookOutLeftScore)
       localStorage.setItem('right', 'true');
     }
 
@@ -413,6 +418,7 @@ const updateCheckboxes = async (blendShapes) => {
       setEyeLookInRightCompleted(true);
       setEyeLookInRightScore(scores.eyeLookInLeft);
       console.log("Eye Look In Right completed.");
+      console.log(eyeLookInRightScore)
       localStorage.setItem('left', 'true');
     }
 
@@ -421,6 +427,8 @@ const updateCheckboxes = async (blendShapes) => {
       setMouthSmileRightScore(scores.mouthSmileRight);
       setMouthSmileLeftScore(scores.mouthSmileLeft);
       console.log("Smile completed.");
+      console.log(mouthSmileRightScore)
+      console.log(mouthSmileLeftScore)
       localStorage.setItem('smiling', 'true');
     }
 
@@ -478,7 +486,7 @@ useEffect(() => {
         return;
       }
 
-      const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/dashboard', {
+      const response = await axios.get(`${baseURL}/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUserData(response.data.user_data);
@@ -493,7 +501,7 @@ useEffect(() => {
 
 
 
-  return (
+return (
 <Container fluid >
 <div className="header">
         <div className="header-content">

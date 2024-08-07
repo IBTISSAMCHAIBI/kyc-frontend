@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import head_rightImg from '../assets/head_rightImg.png';
 import '../components/Dataverification/DataVerification.css';
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 
 const DataVerificationProcess = () => {
   const [userData, setUserData] = useState(null);
@@ -26,7 +27,7 @@ const DataVerificationProcess = () => {
           return;
         }
 
-        const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/dashboard', {
+        const response = await axios.get(`${baseURL}/dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserData(response.data.user_data);

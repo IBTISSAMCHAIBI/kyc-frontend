@@ -5,14 +5,13 @@ import { Container, Button } from 'react-bootstrap';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 const ScanCard = () => {
   const [capturedImage, setCapturedImage] = useState(null);
   const [verificationMessage, setVerificationMessage] = useState('');
   const [inputStyle, setInputStyle] = useState({});
   const [inputText, setInputText] = useState('');
   const [inputIcon, setInputIcon] = useState('/progre.png');
-  const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const navigate = useNavigate();
   
@@ -38,7 +37,7 @@ const ScanCard = () => {
       }
 
       try {
-        const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/upload-card/${username}`, {
+        const response = await fetch(`${baseURL}/upload-card/${username}`, {
           method: 'POST',
           body: formData,
           headers: {
@@ -68,7 +67,7 @@ const ScanCard = () => {
     }
 
     try {
-      const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/check_faces_in_image/${username}/card.jpg`, {
+      const response = await fetch(`${baseURL}/${username}/card.jpg`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -104,7 +103,7 @@ const ScanCard = () => {
     }
 
     try {
-      const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/card_faces/${username}`, {
+      const response = await fetch(`${baseURL}/card_faces/${username}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -113,6 +112,7 @@ const ScanCard = () => {
 
       const result = await response.json();
       setVerificationMessage(result.match_status);
+      console.log(verificationMessage)
       setResult(result); // Store the result in state
       if (result.match_status) {
         toast.success('Card faces verification completed');
@@ -139,7 +139,7 @@ const ScanCard = () => {
     }
 
     try {
-      const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/get-card/${username}`, {
+      const response = await fetch(`${baseURL}/get-card/${username}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

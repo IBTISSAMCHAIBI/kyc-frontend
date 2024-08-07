@@ -4,8 +4,10 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 
 const AdminDashboard = () => {
+
   const [message, setMessage] = useState('');
   const [username, setUsername] = useState('');
   const [error, setError] = useState(null);
@@ -21,7 +23,7 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/admin_dashboard', {
+        const response = await axios.get(`${baseURL}/admin_dashboard`, {
           headers: { Authorization: `Bearer ${token}` }
         });
   
@@ -47,7 +49,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/add_client', {
+      const response = await axios.post(`${baseURL}/add_client`, {
         company: newClientCompany,
         email: newClientEmail
       }, {
@@ -68,7 +70,7 @@ const AdminDashboard = () => {
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/clients', {
+      const response = await axios.get(`${baseURL}/clients`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClients(response.data.clients);
@@ -78,7 +80,6 @@ const AdminDashboard = () => {
       setClientError('An error occurred while fetching clients.');
     }
   };
-
   useEffect(() => {
     fetchClients();
   }, []);
@@ -86,31 +87,28 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/logout', {}, {
+      await axios.post(`${baseURL}/logout`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-
-      // Clear localStorage on logout
       localStorage.removeItem('token');
-      localStorage.removeItem('username'); // Correctly remove username
-
-      // Redirect to login
+      localStorage.removeItem('username'); 
       navigate('/login');
       toast.success('Logged out successfully');
     } catch (error) {
       toast.error('Error logging out'); 
       console.error('Error logging out:', error);
+      setError('Error logging out') // dding seterror ibtissam
     }
   };
 
   const handleSendEmails = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/send-client-emails', {}, {
+      const response = await axios.post(`${baseURL}/send-client-emails`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Emails sent successfully');
-      setEmailSendingStatus(response.data.success); // Display status message
+      setEmailSendingStatus(response.data.success); 
     } catch (error) {
       toast.error('An error occurred while sending emails.');
       setEmailSendingStatus('An error occurred while sending emails.');
@@ -173,8 +171,8 @@ const AdminDashboard = () => {
                     required
                   />
                 </div>
-                {/* {clientError && <Alert variant="danger">{clientError}</Alert>}
-                {successMessage && <Alert variant="success">{successMessage}</Alert>}  */}
+                {clientError && <Alert variant="danger">{clientError}</Alert>}
+                {successMessage && <Alert variant="success">{successMessage}</Alert>} 
                 <Button type="submit" variant="primary">Add Client</Button>
               </form>
             </Card.Body>
@@ -203,7 +201,7 @@ const AdminDashboard = () => {
             <Card.Header>Send Emails to All Clients</Card.Header>
             <Card.Body>
               <Button variant="primary" onClick={handleSendEmails}>Send Emails</Button>
-              {/* {emailSendingStatus && <Alert variant="info" className="mt-3">{emailSendingStatus}</Alert>} */}
+              {emailSendingStatus && <Alert variant="info" className="mt-3">{emailSendingStatus}</Alert>}
             </Card.Body>
           </Card>
         </Col>

@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify styles
 import head_rightImg from '../assets/head_rightImg.png';
 import { Link } from 'react-router-dom';
-
+const baseURL = import.meta.env.REACT_APP_BASE_URL;
 function TakeSelfie() {
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
@@ -41,7 +41,7 @@ function TakeSelfie() {
         formData.append('file', file);
     
         try {
-            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/upload-selfie/${username}`, {
+            const response = await fetch(`${baseURL}/upload-selfie/${username}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Include token in the headers
@@ -98,7 +98,7 @@ function TakeSelfie() {
         }
 
         try {
-            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/match_faces/${username}`, {
+            const response = await fetch(`${baseURL}/match_faces/${username}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -131,7 +131,7 @@ function TakeSelfie() {
         }
     
         try {
-            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/get-selfie/${username}`, {
+            const response = await fetch(`${baseURL}/get-selfie/${username}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Include token in the headers
