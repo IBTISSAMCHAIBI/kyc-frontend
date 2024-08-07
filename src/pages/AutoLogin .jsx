@@ -29,7 +29,7 @@ const AutoLogin = () => {
         // Check if both token and email are present
         if (token && email) {
             // POST request to the backend
-            fetch('http://localhost:5000/auto-login', {
+            fetch('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/auto-login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

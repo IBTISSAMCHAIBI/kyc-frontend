@@ -26,7 +26,7 @@ const DataVerificationProcess = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/dashboard', {
+        const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/dashboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserData(response.data.user_data);

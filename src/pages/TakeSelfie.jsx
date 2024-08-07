@@ -41,7 +41,7 @@ function TakeSelfie() {
         formData.append('file', file);
     
         try {
-            const response = await fetch(`http://127.0.0.1:5000/upload-selfie/${username}`, {
+            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/upload-selfie/${username}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Include token in the headers
@@ -98,7 +98,7 @@ function TakeSelfie() {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:5000/match_faces/${username}`, {
+            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/match_faces/${username}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -131,7 +131,7 @@ function TakeSelfie() {
         }
     
         try {
-            const response = await fetch(`http://127.0.0.1:5000/get-selfie/${username}`, {
+            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/get-selfie/${username}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`, // Include token in the headers

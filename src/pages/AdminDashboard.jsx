@@ -21,7 +21,7 @@ const AdminDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/admin_dashboard', {
+        const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/admin_dashboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
   
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/add_client', {
+      const response = await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/add_client', {
         company: newClientCompany,
         email: newClientEmail
       }, {
@@ -68,7 +68,7 @@ const AdminDashboard = () => {
   const fetchClients = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/clients', {
+      const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/clients', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setClients(response.data.clients);
@@ -86,7 +86,7 @@ const AdminDashboard = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/logout', {}, {
+      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/logout', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
@@ -106,7 +106,7 @@ const AdminDashboard = () => {
   const handleSendEmails = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:5000/send-client-emails', {}, {
+      const response = await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/send-client-emails', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       toast.success('Emails sent successfully');

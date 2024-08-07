@@ -19,7 +19,7 @@ const Dashboard = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/dashboard', {
+        const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/dashboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserData(response.data.user_data);
@@ -47,7 +47,7 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/save-screenshot', formData, {
+      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/save-screenshot', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const Dashboard = () => {
   const handleFileRetrieval = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/get-screenshot', {
+      const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/get-screenshot', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +81,7 @@ const Dashboard = () => {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/logout', {}, {
+      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/logout', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       localStorage.removeItem('token'); // Clear the token

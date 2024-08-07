@@ -10,7 +10,7 @@ function VerificationCompleted () {
   const handleLogout = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/logout', {}, {
+      await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/logout', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

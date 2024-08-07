@@ -51,7 +51,7 @@ const SignUp = () => {
     e.preventDefault();
     console.log('Sign-Up Button Clicked'); // Debug log
     try {
-      const response = await axios.post('http://localhost:5000/create_user', { username: username, password: password });
+      const response = await axios.post('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/create_user', { username: username, password: password });
       console.log('Response:', response.data); // Debug log
       toast.success('Successfully signed up!');
       // Redirect to login page

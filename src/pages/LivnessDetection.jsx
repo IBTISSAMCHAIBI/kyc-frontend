@@ -259,7 +259,7 @@ const checkScreenshotStatus = async (username) => {
   setAbortController(controller);
 
   try {
-    const response = await fetch(`http://127.0.0.1:5000/check-screenshot/${username}`, {
+    const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/check-screenshot/${username}`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       },
@@ -325,7 +325,7 @@ const captureScreenshot = async () => {
           formData.append('file', blob, 'screenshot.jpg');
 
           try {
-            const response = await fetch(`http://127.0.0.1:5000/upload-screenshot/${username}`, {
+            const response = await fetch(`https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/upload-screenshot/${username}`, {
               method: 'POST',
               body: formData,
               headers: {
@@ -478,7 +478,7 @@ useEffect(() => {
         return;
       }
 
-      const response = await axios.get('http://localhost:5000/dashboard', {
+      const response = await axios.get('https://kycsystemdevtospace-f5d176f256d2.herokuapp.com/dashboard', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUserData(response.data.user_data);
