@@ -69,7 +69,7 @@ const ScanCard = () => {
 
     try {
         // Adjust URL format if necessary (e.g., if `/card.jpg` should just be `/card`)
-        const response = await fetch(`${baseURL}/check_faces_in_image/${username}/`, {
+        const response = await fetch(`${baseURL}/check_faces_in_image/${username}/card.jpg`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -131,7 +131,7 @@ const verifyCardFaces = async () => {
       }
 
       const result = await response.json();
-      console.log(result)
+      console.log('Response card data:', result);
       console.log(verificationMessage)
       setVerificationMessage(result.match_status);
       setResult(result);
@@ -213,9 +213,20 @@ const verifyCardFaces = async () => {
         <div className="col-md-6" style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
           <div className="left-section">
             <h1 style={{ fontSize: '2rem', marginBottom: '20px', color: '#343a40' }}>Verification Steps</h1>
-            <ul style={{ listStyleType: 'disc', paddingLeft: '20px', marginBottom: '20px' }}>
+            <ul style={{
+                  fontSize: '1.5rem', 
+                  fontWeight: 'bold', 
+                  color: '#333', 
+                  backgroundColor: '#f8f9fa', 
+                  padding: '15px', 
+                  border: '2px solid #007bff', 
+                  borderRadius: '5px', 
+                  textAlign: 'center', 
+                  marginBottom: '20px'
+                    }}>
               <li>Ensure that the image is good in front side</li>
               <li>Ensure that the image in card is well appear</li>
+              <li>you have to enter an image that has just the card image with good apperace of face </li>
             </ul>
             <h2 style={{ fontSize: '1.5rem', color: '#6c757d', marginBottom: '10px' }}>Scanning your face</h2>
             <p style={{ fontSize: '1rem', color: '#495057', marginBottom: '20px' }}>Please wait for the scan to complete before proceeding to the next step</p>

@@ -150,7 +150,7 @@ function TakeSelfie() {
             }
 
             const data = await response.json();
-            console.log('Response data:', data); // Log the response to check what is received
+            console.log('Response selfie  data :', data); // Log the response to check what is received
             setResult(data); // Handle result data
             setError(null);
         } catch (error) {
