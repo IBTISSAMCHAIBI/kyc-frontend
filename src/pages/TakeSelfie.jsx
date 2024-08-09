@@ -188,22 +188,26 @@ function TakeSelfie() {
             });
     
             if (!response.ok) {
-                throw new Error('Failed to fetch selfie image');
+                throw new Error(`Failed to fetch selfie image: ${response.statusText}`);
             }
-          
     
-            const imageBlob = await response.blob();
-            const imageUrl = URL.createObjectURL(imageBlob);
-            setSelfieImageUrl(imageUrl);
-            toast.success('Selfie image fetched successfully!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-            });
+            const data = await response.json();
+            if (data.url) {
+                const imageBlob = await fetch(data.url).then(res => res.blob());
+                const imageUrl = URL.createObjectURL(imageBlob);
+                setSelfieImageUrl(imageUrl);
+                toast.success('Selfie image fetched successfully!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            } else {
+                throw new Error('Image URL not found in response');
+            }
         } catch (error) {
             console.error('Error fetching selfie image:', error);
             toast.error('Error fetching selfie image. Please try again.', {
@@ -217,6 +221,7 @@ function TakeSelfie() {
             });
         }
     };
+    
 
     return (
         <Container fluid style={{ padding: '20px' }}>

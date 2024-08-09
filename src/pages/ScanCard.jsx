@@ -22,7 +22,7 @@ const ScanCard = () => {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append('file', file, 'card.jpg');
+      formData.append('file', file);
 
       const username = localStorage.getItem('username');
       const token = localStorage.getItem('token');
@@ -63,67 +63,89 @@ const ScanCard = () => {
     const token = localStorage.getItem('token');
 
     if (!username || !token) {
-      toast.error('Username or token not found in localStorage');
-      return;
+        toast.error('Username or token not found in localStorage');
+        return;
     }
 
     try {
-      const response = await fetch(`${baseURL}/${username}/card.jpg`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+        // Adjust URL format if necessary (e.g., if `/card.jpg` should just be `/card`)
+        const response = await fetch(`${baseURL}/check_faces_in_image/${username}/card`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
 
-      const result = await response.json();
-      setVerificationMessage(result.message);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-      if (result.message === 'Good face detected') {
-        setInputStyle({ color: 'green' });
-        setInputText('Face well detected');
-        setInputIcon('/checked.png');
-        toast.success('Good face detected');
-      } else if (result.message === 'Try again, no face detected') {
-        setInputStyle({ color: 'red' });
-        setInputText('No face detected');
-        setInputIcon('/spoofing-detected.png');
-        toast.error('No face detected');
-      }
+        const result = await response.json();
+
+        // Check for response message and update UI accordingly
+        if (result.message === 'Good face detected') {
+            setInputStyle({ color: 'green' });
+            setInputText('Face well detected');
+            setInputIcon('/checked.png');
+            toast.success('Good face detected');
+        } else if (result.message === 'Try again, no face detected') {
+            setInputStyle({ color: 'red' });
+            setInputText('No face detected');
+            setInputIcon('/spoofing-detected.png');
+            toast.error('No face detected');
+        } else {
+            // Handle unexpected messages or response formats
+            setInputStyle({ color: 'orange' });
+            setInputText('Unexpected result');
+            setInputIcon('/warning.png');
+            toast.error('Unexpected result');
+        }
     } catch (error) {
-      toast.error('Error verifying image quality');
+        console.error('Error verifying image quality:', error);
+        toast.error('Error verifying image quality');
     }
-  };
+};
 
-  const verifyCardFaces = async () => {
-    const username = localStorage.getItem('username');
-    const token = localStorage.getItem('token');
 
-    if (!username || !token) {
+const verifyCardFaces = async () => {
+  const username = localStorage.getItem('username');
+  const token = localStorage.getItem('token');
+
+  if (!username || !token) {
       toast.error('Username or token not found in localStorage');
       return;
-    }
+  }
 
-    try {
+  try {
       const response = await fetch(`${baseURL}/card_faces/${username}`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+          method: 'POST',
+          headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+          },
       });
 
-      const result = await response.json();
-      setVerificationMessage(result.match_status);
-      console.log(verificationMessage)
-      setResult(result); // Store the result in state
-      if (result.match_status) {
-        toast.success('Card faces verification completed');
-      } else {
-        toast.error('Card faces verification failed');
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status}. Message: ${errorText}`);
       }
-    } catch (error) {
-      toast.error('Error verifying card faces');
-    }
-  };
+
+      const result = await response.json();
+      console.log(result)
+      setVerificationMessage(result.match_status);
+      setResult(result);
+
+      if (result.match_status === "Match") {
+          toast.success('Card faces verification completed');
+      } else {
+          toast.error('Card faces verification failed');
+      }
+  } catch (error) {
+      console.error('Error verifying card faces:', error);
+      toast.error(`Error verifying card faces: ${error.message}`);
+  }
+};
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -133,12 +155,12 @@ const ScanCard = () => {
   const fetchCardImage = async () => {
     const username = localStorage.getItem('username');
     const token = localStorage.getItem('token');
-
+  
     if (!username || !token) {
       toast.error('Username or token not found in localStorage');
       return;
     }
-
+  
     try {
       const response = await fetch(`${baseURL}/get-card/${username}`, {
         method: 'GET',
@@ -146,23 +168,30 @@ const ScanCard = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-
+  
       if (response.ok) {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        setCapturedImage(url);
-        toast.success('Card image fetched successfully');
+        const data = await response.json(); // Use .json() if your backend returns JSON
+        if (data.url) {
+          const blob = await fetch(data.url).then(res => res.blob()); // Fetch the actual image
+          const url = URL.createObjectURL(blob);
+          setCapturedImage(url);
+          toast.success('Card image fetched successfully');
+        } else {
+          toast.error('Card image URL not found');
+        }
       } else {
         toast.error('Failed to fetch card image');
       }
     } catch (error) {
+      console.error('Error fetching card image:', error);
       toast.error('Error fetching card image');
     }
   };
+  
 
   useEffect(() => {
     if (result) {
-      if (result.similarity_score > 0.70) {
+      if (result.similarity_score > 0.20) {
         navigate('/dataverficationcompleted'); // Replace with your actual route
       } else {
         navigate('/error'); 
