@@ -22,7 +22,7 @@ const ScanCard = () => {
     const file = event.target.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', file ,'card.jpg');
 
       const username = localStorage.getItem('username');
       const token = localStorage.getItem('token');
@@ -69,7 +69,7 @@ const ScanCard = () => {
 
     try {
         // Adjust URL format if necessary (e.g., if `/card.jpg` should just be `/card`)
-        const response = await fetch(`${baseURL}/check_faces_in_image/${username}/card`, {
+        const response = await fetch(`${baseURL}/check_faces_in_image/${username}/`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -132,6 +132,7 @@ const verifyCardFaces = async () => {
 
       const result = await response.json();
       console.log(result)
+      console.log(verificationMessage)
       setVerificationMessage(result.match_status);
       setResult(result);
 
@@ -170,15 +171,10 @@ const verifyCardFaces = async () => {
       });
   
       if (response.ok) {
-        const data = await response.json(); // Use .json() if your backend returns JSON
-        if (data.url) {
-          const blob = await fetch(data.url).then(res => res.blob()); // Fetch the actual image
-          const url = URL.createObjectURL(blob);
-          setCapturedImage(url);
-          toast.success('Card image fetched successfully');
-        } else {
-          toast.error('Card image URL not found');
-        }
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob); // Use .json() if your backend returns JSON
+        setCapturedImage(url);
+        toast.success('Card image fetched successfully');
       } else {
         toast.error('Failed to fetch card image');
       }
