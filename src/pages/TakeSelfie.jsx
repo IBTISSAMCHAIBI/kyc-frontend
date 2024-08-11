@@ -326,7 +326,7 @@ function TakeSelfie() {
                             </div>
                         ) : (
                             <div>
-                                <Link to="/selfie" style={{ textDecoration: 'none' }}>
+                                <Link to="/scan" style={{ textDecoration: 'none' }}>
                                     <p style={{ color: 'red', fontSize: '1.5rem', marginBottom: '15px' }}>
                                     <i className="fas fa-exclamation-circle" style={{ marginRight: '8px' }}></i>
                                         We cant ensure that you are the live person.</p>
