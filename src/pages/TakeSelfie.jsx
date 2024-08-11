@@ -2,11 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import { Container, Button } from 'react-bootstrap';
+import { FaCamera, FaRedo, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify styles
 import head_rightImg from '../assets/head_rightImg.png';
 import { Link } from 'react-router-dom';
 import { CONFIG } from './config';
+
 const baseURL = CONFIG.BASE_URL;
 function TakeSelfie() {
     const [result, setResult] = useState(null);
@@ -99,7 +101,7 @@ function TakeSelfie() {
             const file = new File([blob], "selfie.jpg", { type: "image/jpg" });
             uploadSelfieImage(file).finally(() => isUploading = false);
             setShowIdWebcam(false); // Close webcam after capture
-            toast.success('Selfie captured and uploading...', {
+            toast.success('Selfie captured', {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -231,20 +233,33 @@ function TakeSelfie() {
                         <img src={head_rightImg} alt="Verification Process" style={{ width: '100%', maxWidth: '500px', borderRadius: '10px' }} />
                     </div>
                 </div>
-                <h1 style={{ marginBottom: '20px' }}>Verification</h1>
-                <h2 style={{
-                  fontSize: '1.5rem', 
-                  fontWeight: 'bold', 
-                  color: '#333', 
-                  backgroundColor: '#f8f9fa', 
-                  padding: '15px', 
-                  border: '2px solid #007bff', 
-                  borderRadius: '5px', 
-                  textAlign: 'center', 
-                  marginBottom: '20px'
-                    }}>
-                    Please wait until you get the notification of selfie upload
-                 </h2>
+                <h1 style={{ marginBottom: '20px' }}>Ensure livness using selfie verification </h1>
+                <ul style={{
+                    color: '#333',
+                    backgroundColor: '#f8f9fa',
+                    padding: '20px',
+                    borderRadius: '10px',
+                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                    listStyleType: 'none',
+                    textAlign: 'left'
+                }}>
+                    <li style={{ marginBottom: '15px' }}>
+                        <FaRedo style={{ color: '#dc3545', marginRight: '10px' }} />
+                        If the webcam opens without clicking the `Enable Webcam` button, it s better to reload the page.
+                    </li>
+                    <li style={{ marginBottom: '15px' }}>
+                        <FaCheckCircle style={{ color: '#28a745', marginRight: '10px' }} />
+                        Please wait until you receive a notification that the selfie has been successfully uploaded before proceeding to the next step.
+                    </li>
+                    <li style={{ marginBottom: '15px' }}>
+                        <FaCamera style={{ color: '#007bff', marginRight: '10px' }} />
+                        Ensure that your face is positioned correctly in front of the webcam with good lighting conditions. Otherwise, you may encounter an error.
+                    </li>
+                    <li style={{ marginBottom: '15px' }}>
+                        <FaExclamationTriangle style={{ color: '#ffc107', marginRight: '10px' }} />
+                        If you see a `Retry` button instead of `Continue``, it s better to retake the selfie or go back to the liveness detection page and restart the verification process.
+                    </li>
+                </ul>
 
                 <div className="capture-container" style={{ marginBottom: '20px' }}>
                     <Button
@@ -295,25 +310,35 @@ function TakeSelfie() {
                     {selfieImageUrl && <img src={selfieImageUrl} alt="Captured Selfie" style={{ width: '100%', maxWidth: '320px', borderRadius: '10px', marginTop: '10px' }} />}
                 </div>
                 {error && <div style={{ color: 'red', marginTop: '10px' }}>{error}</div>}
+                <div style={{ marginTop: '20px', textAlign: 'center', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '10px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
                 {result && (
                     <div style={{ marginTop: '20px' }}>
-                        {result.similarity_score > 0.20 ? (
+                        {result.similarity_score > 0.70 ? (
                             <div>
-                                <Link to="/scancard">
-                                    <p style={{ color: 'green', fontSize: '1.25rem' }}>You are verified and can proceed to card and information verification.</p>
-                                    <Button style={{ backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '5px' }}>Continue</Button>
+                                <Link to="/scancard" style={{ textDecoration: 'none' }}>
+                                    <p style={{ color: 'green', fontSize: '1.5rem', marginBottom: '15px' }}>
+                                    <i className="fas fa-check-circle" style={{ marginRight: '8px' }}></i>
+                                    You are verified and can proceed to card and information verification.</p>
+                                    <Button style={{ backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px 20px' }}>
+                                    Continue <i className="fas fa-arrow-right" style={{ marginLeft: '8px' }}></i>
+                                    </Button>
                                 </Link>
                             </div>
                         ) : (
                             <div>
-                                <Link to="/scan">
-                                    <p style={{ color: 'red', fontSize: '1.25rem' }}>We cant ensure that you are the live person.</p>
-                                    <Button style={{ backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '5px' }}>Retry</Button>
+                                <Link to="/selfie" style={{ textDecoration: 'none' }}>
+                                    <p style={{ color: 'red', fontSize: '1.5rem', marginBottom: '15px' }}>
+                                    <i className="fas fa-exclamation-circle" style={{ marginRight: '8px' }}></i>
+                                        We cant ensure that you are the live person.</p>
+                                    <Button style={{ backgroundColor: '#dc3545', color: '#fff', border: 'none', borderRadius: '5px', padding: '10px 20px' }}>
+                                        Retry <i className="fas fa-redo" style={{ marginLeft: '8px' }}></i>
+                                    </Button>
                                 </Link>
                             </div>
                         )}
                     </div>
                 )}
+                </div>
             </div>
             <ToastContainer />
         </Container>

@@ -4,37 +4,14 @@ import subscribe from '../assets/subscribe.png';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../components/Login/Login.css';
-// import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
 import { ToastContainer, toast } from 'react-toastify';
-// import { app } from '../firebase';
 import 'react-toastify/dist/ReactToastify.css';
-// const baseURL = import.meta.env.REACT_APP_BASE_URL;
 import { CONFIG } from './config';
 const baseURL = CONFIG.BASE_URL;
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  // const handleGoogleSignIn = async () => {
-  //   const provider = new GoogleAuthProvider();
-  //   const auth = getAuth(app);
-
-  //   try {
-  //     const result = await signInWithPopup(auth, provider);
-  //     const user = result.user;
-  //     const token = await user.getIdToken();
-
-  //     const response = await axios.post('http://localhost:5000/google-login', { token });
-
-  //     localStorage.setItem('token', response.data.token);  
-  //     localStorage.setItem('role', response.data.role);  // Store user role
-  //     toast.success('Successfully authenticated with Google!');
-  //     navigate('/process');  // Redirect to the dashboard
-  //   } catch (error) {
-  //     toast.error('Error signing in with Google.');
-  //   }
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -43,15 +20,12 @@ const Login = () => {
 
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('role', response.data.role);
-      // localStorage.setItem('username', response.data.username);  // Store user role
       toast.success('Successfully logged in!');
-
-      // Redirect based on user role
       const role = response.data.role;
       if (role === 'admin') {
-        navigate('/admin-dashboard');  // Redirect to admin dashboard
+        navigate('/admin-dashboard'); 
       } else {
-        navigate('/process');  // Redirect to user dashboard
+        navigate('/process');  
       }
     } catch (error) {
       toast.error(error.response?.data?.error || 'An error occurred');
@@ -65,14 +39,11 @@ const Login = () => {
           <div className="login-welcome">
             <h1>Login</h1>
             <p>Welcome back to DEVOSPACE. Please enter your credentials below to access your account.</p>
-            <img src={subscribe} alt="Login Image" className="login-image" />
+            <img src={subscribe} alt="Login Image" className="login-image d-none d-md-block" />
           </div>
         </Col>
         <Col md={7} className="login-right">
           <div className="login-form">
-            {/* <Button variant="outline-primary" className="google-btn" onClick={handleGoogleSignIn}>
-              <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google Logo" /> Continue with Google
-            </Button> */}
             <hr className="divider" />
             <Form onSubmit={handleLogin}>
               <Form.Group controlId="formUsername">

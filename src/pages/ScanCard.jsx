@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 import { CONFIG } from './config';
+import { FaExclamationCircle, FaInfoCircle } from 'react-icons/fa';
 const baseURL = CONFIG.BASE_URL;
 const ScanCard = () => {
   const [capturedImage, setCapturedImage] = useState(null);
@@ -187,7 +188,7 @@ const verifyCardFaces = async () => {
 
   useEffect(() => {
     if (result) {
-      if (result.similarity_score > 0.20) {
+      if (result.similarity_score > 0.30) {
         navigate('/dataverficationcompleted'); // Replace with your actual route
       } else {
         navigate('/error'); 
@@ -209,26 +210,49 @@ const verifyCardFaces = async () => {
         </div>
       </div>
       <ToastContainer />
+      <div style={{
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  textAlign: 'center'
+}}>
+  <h1 style={{ marginBottom: '20px' }}>Verified that you are the correct person with your card image</h1>
+</div>
+
       <div className="row">
         <div className="col-md-6" style={{ padding: '20px', backgroundColor: '#f8f9fa', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
           <div className="left-section">
-            <h1 style={{ fontSize: '2rem', marginBottom: '20px', color: '#343a40' }}>Verification Steps</h1>
-            <ul style={{
-                  fontSize: '1.5rem', 
-                  fontWeight: 'bold', 
-                  color: '#333', 
-                  backgroundColor: '#f8f9fa', 
-                  padding: '15px', 
-                  border: '2px solid #007bff', 
-                  borderRadius: '5px', 
-                  textAlign: 'center', 
-                  marginBottom: '20px'
-                    }}>
-              <li>Ensure that the image is good in front side</li>
-              <li>Ensure that the image in card is well appear</li>
-              <li>you have to enter an image that has just the card image with good apperace of face </li>
-            </ul>
-            <h2 style={{ fontSize: '1.5rem', color: '#6c757d', marginBottom: '10px' }}>Scanning your face</h2>
+          <ul style={{
+    color: '#333',
+    backgroundColor: '#f8f9fa',
+    padding: '20px',
+    borderRadius: '8px',
+    textAlign: 'left',
+    marginBottom: '20px',
+    listStyle: 'none',
+    lineHeight: '1.6',
+}}>
+    <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+    <FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }}  />
+        Ensure the image is clear and well-lit.
+    </li>
+    <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+        <FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+        Ensure the card image is properly aligned and fully visible.
+    </li>
+    <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+        <FaInfoCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+        Upload an image that clearly shows both the card and your face.
+    </li>
+    <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+        <FaInfoCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+        Wait until you receive a confirmation message indicating successful image upload before proceeding.
+    </li>
+    <li style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+        <FaInfoCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+        To verify that your image includes your face, use the verification button.
+     </li>
+  </ul>
             <p style={{ fontSize: '1rem', color: '#495057', marginBottom: '20px' }}>Please wait for the scan to complete before proceeding to the next step</p>
             <div className="input-group" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
               <input
@@ -263,7 +287,7 @@ const verifyCardFaces = async () => {
         </div>
         <div className="col-md-6" style={{ padding: '20px' }}>
           <div className="right-section">
-            <h1 style={{ fontSize: '2rem', color: '#343a40' }}>Upload Your Image</h1>
+            <h2 style={{marginBottom: '20px', color: '#343a40' }}>Upload Your card Image here</h2>
             <input
               type="file"
               accept="image/*"
@@ -271,9 +295,9 @@ const verifyCardFaces = async () => {
               ref={fileInputRef}
               style={{ marginBottom: '20px' }}
             />
-            <Button onClick={fetchCardImage} variant="primary" style={{ marginRight: '10px' }}>Fetch Card Image</Button>
-            <Button onClick={verifyImageQuality} variant="secondary" style={{ marginRight: '10px' }}>Verify Image Quality</Button>
-            <Button onClick={handleSubmit} variant="success">Submit</Button>
+            <Button onClick={fetchCardImage} variant="primary" style={{ marginRight: '10px' }}>Fetch Card</Button>
+            <Button onClick={verifyImageQuality} variant="secondary" style={{ marginRight: '10px' }}>Verify Image</Button>
+            <Button onClick={handleSubmit} variant="success"  style={{ marginRight: '10px' }}>verify yourself</Button>
             {capturedImage && (
               <div style={{ marginTop: '20px' }}>
                 <h2>Captured Image:</h2>

@@ -559,6 +559,10 @@ return (
    <li><FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }} />
        A continue button will appear once you successfully complete the three movements.
    </li>
+   <li>
+    <FaCamera style={{ color: '#007bff', marginRight: '10px' }} />
+     Ensure that your face is positioned correctly in front of the webcam with good lighting conditions. Otherwise, you may encounter an error.
+  </li>
    <li><FaCamera style={{ color: '#007bff', marginRight: '10px' }} />
        After clicking the `Go to Liveness Detection` button, make sure to enable the webcam first.
    </li>
@@ -569,8 +573,8 @@ return (
    Once all movements are successfully completed, a screenshot will be taken. You must wait until it is saved before continuing to the next step.
    </li>
    <li><FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }} />
-   If a screenshot has already been saved, you will not be able to take a new one, even if you reload the page. A continue button will appear even if you haven t completed any movements, and the app will use the first screenshot. To take a new screenshot, you need to logout and login again. 
-   </li>
+   If a screenshot is saved, you can t take a new one, even after reloading the page. The continue button will appear, using the first screenshot. To retake it, log out and log back in.
+   </li>   
 </ul>
   <hr/>
   <div className="scan-status  ms-3">

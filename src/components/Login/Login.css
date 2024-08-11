@@ -1,8 +1,8 @@
 .login-container {
-    height: 100vh;
+    /* height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
   }
   
   .login-left, .login-right {
@@ -20,9 +20,9 @@
   }
   
   .login-right {
-    background-color: #f0f0f0; /* Gray background color */
-    padding: 20px;
-  }
+    /* background-color: #f0f0f0; /* Gray background color
+    padding: 20px; */
+  } 
   
   .login-welcome {
     max-width: 400px;
@@ -61,5 +61,17 @@
   .signup-link {
     margin-top: 20px;
     text-align: center;
+  }
+  
+  .login-image {
+    /* Default visibility: hidden on smaller screens */
+    display: none;
+  }
+  
+  /* Visible on medium screens and larger */
+  @media (min-width: 768px) {
+    .login-image {
+      display: block;
+    }
   }
   

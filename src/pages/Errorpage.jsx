@@ -38,7 +38,7 @@ function ErrorPage() {
             <p>Seamless Real-time <span className="highlight">Identity</span> Verification</p>
           </div>
         </div>
-        <div className="image-container">
+        <div className="image-container" >
           <img src={head_rightImg} alt="Verification Process" className="verification-image" />
         </div>
       </div>

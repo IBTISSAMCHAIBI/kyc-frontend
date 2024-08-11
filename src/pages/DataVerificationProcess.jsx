@@ -64,7 +64,6 @@ const DataVerificationProcess = () => {
         ) : (
           <p>Loading user data...</p>
         )}
-        <h2>Data Verification</h2>
         <div className="verification-items">
           <div className="item">
             <div className="icon">
@@ -84,15 +83,24 @@ const DataVerificationProcess = () => {
               <p>Scan your ID document to digitize it. Ensure that it is still valid and not damaged.</p>
             </div>
           </div>
+          <div className="item">
+            <div className="icon">
+              <img src='/icon1.png' alt="Icon" />
+            </div>
+            <div className="description">
+              <h3>Verification conditions </h3>
+              <p>Ensure that you have a good lighiting conditions in all verification steps for verified yourself  </p>
+            </div>
+          </div>
         </div>
-        <div className="checkbox">
+        <div className="checkbox" style={{marginTop:"10px"}}>
           <input type="checkbox" id="consent" checked={isChecked} onChange={handleCheckboxChange} />
           <label htmlFor="consent">
             I consent to my personal information being processed by a third party for identity verification.
           </label>
         </div>
         <Link to={isChecked ? "/scan" : "#"}>
-          <Button disabled={!isChecked}>
+          <Button disabled={!isChecked} style={{marginTop:"30px"}}>
             Start verification process
           </Button>
         </Link>

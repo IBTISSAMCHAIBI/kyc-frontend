@@ -43,7 +43,7 @@ function VerificationCompleted () {
         <Row className="justify-content-center">
           <Col md={6} className="text-center">
             <img src="/done.png" alt="Hero Background" className="img-fluid" />
-            <h1>Face recognation completed</h1>
+            <h1  style={{ marginTop: '40px' }}>Face recognation completed</h1>
             <p>Thank you for following all these detailed steps to successfully perform facial recognition.</p>
           </Col>
         </Row>

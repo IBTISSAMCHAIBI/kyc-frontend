@@ -71,7 +71,7 @@ const SignUp = () => {
           <div className="login-welcome">
             <h1>Sign Up</h1>
             <p>Welcome to DEVOSPACE. Please enter your credentials below to create a new account.</p>
-            <img src={subscribe} alt="Login Image" className="login-image" />
+            <img src={subscribe} alt="Login Image"  className="login-image d-none d-md-block" />
           </div>
         </Col>
         <Col md={7} className="login-right">
