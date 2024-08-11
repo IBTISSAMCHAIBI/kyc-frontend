@@ -1,0 +1,25 @@
+/* Resetting margin and padding for body */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+  }
+  
+  /* Ensuring the container takes full width */
+  .container,
+  .container-fluid {
+    padding: 0;
+    margin: 0;
+    max-width: 100%; /* Ensures the container doesn't have a max-width constraint */
+    width: 100%; /* Ensures the container takes full width */
+  }
+  
+  /* Optional: if you want to apply the styles specifically to your page */
+  #home-page-container {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+  

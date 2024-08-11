@@ -1,10 +1,11 @@
 import {Col, Container, Row } from 'react-bootstrap';
 import './Header.css';
 import head_rightImg from '../../assets/headerRght.png';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <div className='header'>
+    <Container  fluid className='header'>
     <div className="container-fluid">
       <Row className="custom-background">
         <Col md={5}>
@@ -16,10 +17,10 @@ const Header = () => {
               Discover Our Cutting-Edge Verification Solutions.
             </p>
             <div className="d-flex justify-content-between align-items-start w-50 mt-4">
-              <a href="#features" className="custom-button">
-                Explore our Features
+              <Link to="/login" className="custom-button">
+                Explore our App
                 <span>&rarr;</span>
-              </a>
+              </Link>
             </div>
           </div>
         </Col>
@@ -32,7 +33,7 @@ const Header = () => {
         </Col>
       </Row>
     </div>
-  </div>
+  </Container>
   
 
   )

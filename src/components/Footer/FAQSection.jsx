@@ -6,10 +6,10 @@ function FlushExample() {
   return (
     <Container fluid className="mt-4">
       <div className="w-75 mt-2 h_title">
-        <h1>Frequently Asked Questions</h1>
+      <h2  style={{ marginLeft: '100px', padding: 0, marginBottom: '40px' }} ><span className="yellow-underline">Frequently </span>Asked Questions</h2>
       </div>
       <Row className="">
-        <Col md={6} className="mb-4">
+        <Col md={6} className="mb-4 ">
           <Accordion defaultActiveKey="0" flush>
             <Accordion.Item eventKey="0">
               <Accordion.Header>How can I test the KYC API ?</Accordion.Header>

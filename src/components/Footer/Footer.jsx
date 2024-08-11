@@ -1,43 +1,35 @@
-import React, { useState } from 'react';
-import { Button, Form, InputGroup, Container, Row, Col } from 'react-bootstrap';
+import { Button, Container, Row, Col } from 'react-bootstrap';
 import './Footer.css';
-// import '../../assets/logo.png';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo2.png';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
-    const [email, setEmail] = useState('');
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
     return (
         <div>
-       <Container className="appointment-section text-center py-2 d-flex justify-content-center align-items-center">
-      <div className="box">
-        <h2>Want to make an appointment easily?</h2>
-        <Button variant="light" className="mt-3 contact-button">Contact here</Button>
-      </div>
-    </Container>
-            <Container fluid className="footer-section py-4">
-                <Row className="align-items-center">
-                    <Col md={6}>
-                        <div className="footer-logo">
-                            <img src={logo}alt="DEVOSPACE Logo" />
-                        </div>
+            {/* Appointment Section */}
+            <Container fluid className="appointment-section text-center py-4">
+                <Row className="justify-content-center">
+                    <Col md={8} lg={6} className="box">
+                        <h2>Want to make test easily?</h2>
+                        <Link to ="/SignUp">
+                        <Button variant="light" className="mt-3 contact-button">Click here</Button>
+                        </Link>
                     </Col>
-                    {/* <Col md={6} className="text-md-right">
-                        <InputGroup className="email-subscribe">
-                            <Form.Control
-                                type="email"
-                                placeholder="Your email address..."
-                                value={email}
-                                onChange={handleEmailChange}
-                            />
-                            <InputGroup.Append>
-                                <Button variant="primary">Subscribe</Button>
-                            </InputGroup.Append>
-                        </InputGroup>
+                </Row>
+            </Container>
+
+            {/* Footer Section */}
+            <Container fluid className="footer-section py-4">
+                <Row className="align-items-center justify-content-center">
+                    <Col md={12} className="text-center">
+                        <div className="footer-logo">
+                            <img src={logo} alt="DEVOSPACE Logo" />
+                        </div>
+                        <p className="copyright">Copyright © 2024 DEVOSPACE</p>
+                    </Col>
+                    {/* <Col md={6} className="text-center mt-3 mt-md-0">
+                        <input type="email" placeholder="Your email address..." className="email-input" />
+                        <Button variant="primary" className="subscribe-button">Subscribe</Button>
                     </Col> */}
                 </Row>
             </Container>
