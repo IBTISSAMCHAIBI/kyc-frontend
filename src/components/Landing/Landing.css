@@ -243,3 +243,39 @@ body, html {
   margin-left: 0; /* Removes left margin */
   padding-left: 0; /* Removes left padding if needed */
 }
+
+/* Landing.css */
+
+/* Ensure images take full width */
+.imageContainer img {
+  width: 100%;
+  height: auto; /* Maintain aspect ratio */
+}
+
+/* Adjust margins for h2 and p elements */
+.head_left h2, .head_left p {
+  margin: 0;
+  padding: 0;
+}
+
+.head_left h2 {
+  margin-bottom: 40px;
+}
+
+.head_left p {
+  margin-bottom: 20px; /* Adjust as needed */
+}
+
+@media (max-width: 768px) {
+  .head_left h2 {
+    font-size: 1.5rem; /* Adjust font size for smaller screens */
+  }
+
+  .head_left p {
+    font-size: 1rem; /* Adjust font size for smaller screens */
+  }
+
+  .head_right {
+    width: 100%; /* Ensure full width on small screens */
+  }
+}

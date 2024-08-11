@@ -14,7 +14,7 @@ const Header = () => {
               <h1>Seamless Real-time Identity Verification</h1>
             </div>
             <p className="text-secondary">
-              Discover Our Cutting-Edge Verification Solutions.
+              {/* Discover Our Cutting-Edge Verification Solutions. */}
             </p>
             <div className="d-flex justify-content-between align-items-start w-50 mt-4">
               <Link to="/login" className="custom-button">

@@ -22,7 +22,7 @@ const FeatureCard = ({ title, description, backgroundColor, width, height, margi
 
 const FeaturesSection = () => {
   return (
-    <Container fluid id="#about">
+    <Container fluid id="">
       <Row>
         <Col md={6} className="mb-4">
           <FeatureCard
@@ -48,7 +48,7 @@ const FeaturesSection = () => {
         </Col>
       </Row>
       <Row className="custom-bg mb-4">
-        <Col md={5}>
+        <Col  xs={12} md={6} style={{ margin: 0, padding: 0, marginBottom: '40px' }}>
           <div className="head_left">
             <h2 style={{ margin: 0, padding: 0, marginBottom: '40px' }}><span className="yellow-underline">Fast Secure</span> Verification</h2>
             <p  style={{ margin: 0, padding: 0 }} className="text-secondary">
@@ -56,7 +56,7 @@ const FeaturesSection = () => {
             </p>
           </div>
         </Col>
-        <Col md={7}>
+        <Col  xs={12} md={6}>
           <div className="head_right">
             <div className="imageContainer d-flex justify-content-end align-items-center shadow-sm rounded">
               <img src={head_rightImg} alt="header-image" className="head_rightImg" />
@@ -83,7 +83,7 @@ const FeaturesSection = () => {
         </div>
       </div>
       <Row className="custom-bg mb-4">
-        <Col md={6}>
+        <Col  xs={12} md={6}>
           <div className="head_left">
             <h2  style={{ margin: 0, padding: 0, marginBottom: '40px' }} ><span className="yellow-underline">Exceed </span>Traditional Limits</h2>
             <p style={{ margin: 0, padding: 0 }} className="text-secondary">
@@ -92,7 +92,7 @@ const FeaturesSection = () => {
             </p>
           </div>
         </Col>
-        <Col md={6}>
+        <Col xs={12} md={6}>
           <div className="head_right">
             <div className="imageContainer d-flex justify-content-end align-items-center shadow-sm rounded">
               <img src={head1_rightImg} alt="header-image" className="head_rightImg" />
