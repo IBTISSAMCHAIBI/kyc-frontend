@@ -1,4 +1,4 @@
-import { Container, Row, Col} from 'react-bootstrap';
+import { Container, Row, Col ,Button} from 'react-bootstrap';
 import  { useEffect, useRef, useState } from 'react';
 import vision from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3';
 import '../components/Dataverification/ScanFacePage.css';
@@ -9,6 +9,7 @@ import head_rightImg from '../assets/head_rightImg.png';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CONFIG } from './config';
+import { FaCheckCircle, FaExclamationCircle, FaCamera, FaRedo } from 'react-icons/fa';
 const baseURL = CONFIG.BASE_URL;
 
 
@@ -500,7 +501,23 @@ useEffect(() => {
   fetchUserData();
 }, [navigate]);
 
+const handleLogout = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    await axios.post(`${baseURL}/logout`, {}, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
+    // Clear localStorage on logout
+    localStorage.removeItem('token');
+    localStorage.removeItem('username'); // Correctly remove username
+
+    // Redirect to login
+    navigate('/login');
+  } catch (error) {
+    console.error('Error logging out:', error);
+  }
+};
 
 return (
 <Container fluid >
@@ -526,30 +543,35 @@ return (
           )}
   <Col md={6}>
     <div className="verification-steps">
-    <ul style={{ 
+<ul style={{ 
     color: '#333', 
-    backgroundColor: '#e9ecef', 
-    padding: '15px', 
-    border: '2px solid #007bff', 
-    borderRadius: '5px', 
-    marginBottom: '20px', /* Increase line height for better readability */
+    backgroundColor: '#f8f9fa', 
+    padding: '20px', 
+    borderRadius: '8px', 
+    marginBottom: '20px', 
+    marginLeft: '10px',
+    lineHeight: '1.6',
+    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' // Adds a subtle shadow for a polished look
 }}>
-   <li> You need to perform these movements one after another and rapidly, as the webcam will open after 3 seconds. If none of the movements are achieved, you will need to try again.</li>
-   <li>a continue button will appear just when you acheive the 3 mouvment .</li>
-   <li>when you click on go to livness detection button you have to click on enable webcam first .</li>
-   
-
+   <li><FaCheckCircle style={{ color: '#28a745', marginRight: '10px' }} />
+       Perform these movements one after another quickly. The webcam will activate after 3 seconds. If you do not complete all the movements, you will need to try again.
+   </li>
+   <li><FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+       A continue button will appear once you successfully complete the three movements.
+   </li>
+   <li><FaCamera style={{ color: '#007bff', marginRight: '10px' }} />
+       After clicking the `Go to Liveness Detection` button, make sure to enable the webcam first.
+   </li>
+   <li><FaRedo style={{ color: '#dc3545', marginRight: '10px' }} />
+       If you fail to complete a movement, it s better to reload the page before trying again.
+   </li>
+   <li><FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+   Once all movements are successfully completed, a screenshot will be taken. You must wait until it is saved before continuing to the next step.
+   </li>
+   <li><FaExclamationCircle style={{ color: '#ffc107', marginRight: '10px' }} />
+   If a screenshot has already been saved, you will not be able to take a new one, even if you reload the page. A continue button will appear even if you haven t completed any movements, and the app will use the first screenshot. To take a new screenshot, you need to logout and login again. 
+   </li>
 </ul>
-
-     <div className="d-flex align-items-center mb-4">
-    <img src='/icon3.png' alt="check icon" className="status-icon me-2" />
-    <h2 className="mb-0">Scanning your face</h2>
-  </div>
-          
-    <ul className='ms-3'>
-      <li className='ml-5'>Please wait for the scan to complete before proceeding to the next step .</li>
-      <li>if you want to continue you ve to  achieve all requere mouvment in the same order .</li> 
-      </ul>
   <hr/>
   <div className="scan-status  ms-3">
   <div className="mb-3">
@@ -613,8 +635,10 @@ return (
 </div>
 </Col>
   <Col md={6}>
-    <h2 className="mb-4">Scanning your face</h2>
-    <p>Please wait for the scan to complete before proceeding to the next step</p>
+  <div className="d-flex align-items-center mb-4">
+    <img src='/icon3.png' alt="check icon" className="status-icon me-2" />
+    <h2 className="mb-0">Scanning your face</h2>
+  </div>
     <div id="webcam-container" className="text-center">
       {webcamRunning ? (
         <div id="liveView" className="videoView">
@@ -644,6 +668,9 @@ return (
         CONTINUE
       </button>
           </Link>
+          <div className="error-buttons">
+        <Button variant="danger" onClick={handleLogout}>Logout</Button>
+        </div>
         </div>
       )}
     </div>
